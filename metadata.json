@@ -1,0 +1,6 @@
+{
+  "name": "Evolution Transfers",
+  "description": "Private chauffeur, airport transfers, hotel shuttles, and bespoke Cape Town & Western Cape journeys.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
