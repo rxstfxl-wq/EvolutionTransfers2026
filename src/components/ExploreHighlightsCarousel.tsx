@@ -11,10 +11,19 @@ interface ExploreHighlightsCarouselProps {
   onExplorePage: () => void;
 }
 
-const CAROUSEL_SEQUENCE_IDS = [
+const DESKTOP_SEQUENCE_IDS = [
   'canal-walk',
   'va-waterfront',
   'camps-bay',
+  'table-mountain',
+  'cape-point',
+  'clifton-beaches',
+] as const;
+
+const MOBILE_SEQUENCE_IDS = [
+  'va-waterfront',
+  'camps-bay',
+  'canal-walk',
   'table-mountain',
   'cape-point',
   'clifton-beaches',
@@ -34,11 +43,11 @@ export function ExploreHighlightsCarousel({
   onEnquireComplimentary,
   onExplorePage,
 }: ExploreHighlightsCarouselProps) {
-  const carouselDestinations = CAROUSEL_SEQUENCE_IDS.map((id) =>
-    DESTINATIONS.find((dest) => dest.id === id)
-  ).filter((dest): dest is DestinationItem => Boolean(dest));
-
   const [pageSize, setPageSize] = useState<number>(() => getPageSizeForViewport());
+  const sequenceIds = pageSize === 1 ? MOBILE_SEQUENCE_IDS : DESKTOP_SEQUENCE_IDS;
+  const carouselDestinations = sequenceIds
+    .map((id) => DESTINATIONS.find((dest) => dest.id === id))
+    .filter((dest): dest is DestinationItem => Boolean(dest));
   const [currentPage, setCurrentPage] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const shouldReduceMotion = useReducedMotion();

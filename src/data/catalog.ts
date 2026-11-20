@@ -170,9 +170,9 @@ export const DESTINATIONS: DestinationItem[] = [
       'Palm-lined beachfront promenade beneath the Twelve Apostles—ideal for sunset dining and leisure pickups.',
     editorialIntro:
       'Travel along Victoria Road with sweeping ocean vistas before stepping out right beside Camps Bay’s seaside cafés and white sands.',
-    image: '/assets/aistudio/image_3720343c.png',
+    image: '/media/explore/Camps%20Bay%20Coastal%20Panorama.png',
     imageAlt:
-      'Black Mercedes-Benz V-Class driving along the golden-hour Cape Town Atlantic coastline beneath Table Mountain',
+      'Panoramic coastal view of Camps Bay beachfront and turquoise bay beneath the Twelve Apostles mountains',
     featuredInCarousel: true,
   },
   {
