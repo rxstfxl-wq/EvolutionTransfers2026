@@ -12,10 +12,10 @@ export function BrandWordmark({
   if (variant === 'header') {
     return (
       <span
-        className={`inline-flex items-baseline gap-2 font-serif tracking-[0.14em] text-[#C6A66B] uppercase whitespace-nowrap shrink-0 ${className}`}
+        className={`inline-flex items-baseline gap-1.5 sm:gap-2 font-serif tracking-[0.09em] sm:tracking-[0.14em] text-[#C6A66B] uppercase whitespace-nowrap shrink-0 ${className}`}
       >
-        <span className="text-lg sm:text-xl font-medium">Evolution</span>
-        <span className="text-[0.68rem] tracking-[0.26em] text-[#FAF9F6]/85 font-sans font-medium">
+        <span className="text-[15px] sm:text-xl font-medium">Evolution</span>
+        <span className="text-[9.5px] sm:text-[0.68rem] tracking-[0.18em] sm:tracking-[0.26em] text-[#FAF9F6]/85 font-sans font-medium">
           Transfers
         </span>
       </span>

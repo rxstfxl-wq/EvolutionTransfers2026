@@ -61,7 +61,7 @@ export function ContactPage() {
   return (
     <div className="bg-[#FAF9F6] text-[#090909]">
       {/* Header */}
-      <section className="bg-[#090909] text-[#FAF9F6] py-14 lg:py-20 border-b border-[#C6A66B]/20">
+      <section className="bg-[#090909] text-[#FAF9F6] py-12 sm:py-14 lg:py-20 border-b border-[#C6A66B]/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <p className="text-xs font-semibold tracking-[0.22em] uppercase text-[#C6A66B]">
             Direct Contact
@@ -77,11 +77,11 @@ export function ContactPage() {
       </section>
 
       {/* Contact Grid */}
-      <section className="py-14 lg:py-20 bg-[#F4F0E8]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+      <section className="py-10 sm:py-14 lg:py-20 bg-[#F4F0E8]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
           {/* Left: Direct Business Details */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="bg-[#090909] text-[#FAF9F6] p-7 sm:p-8 border border-[#C6A66B]/25 space-y-6">
+            <div className="bg-[#090909] text-[#FAF9F6] p-5 sm:p-8 border border-[#C6A66B]/25 space-y-6">
               <div>
                 <p className="text-xs font-semibold tracking-[0.16em] uppercase text-[#C6A66B]">
                   Telephone
@@ -90,7 +90,7 @@ export function ContactPage() {
                   href={BUSINESS_CONTACT.phoneHref}
                   className="mt-1.5 inline-flex items-center gap-2.5 font-serif text-2xl text-[#FAF9F6] hover:text-[#C6A66B] transition-colors tabular-nums"
                 >
-                  <Phone className="w-5 h-5 text-[#C6A66B]" aria-hidden="true" />
+                  <Phone className="w-5 h-5 text-[#C6A66B] shrink-0" aria-hidden="true" />
                   <span>{BUSINESS_CONTACT.phoneDisplay}</span>
                 </a>
               </div>
@@ -101,9 +101,9 @@ export function ContactPage() {
                 </p>
                 <a
                   href={BUSINESS_CONTACT.emailHref}
-                  className="mt-1.5 inline-flex items-center gap-2.5 text-base text-[#FAF9F6] hover:text-[#C6A66B] transition-colors"
+                  className="mt-1.5 inline-flex items-center gap-2.5 text-base text-[#FAF9F6] hover:text-[#C6A66B] transition-colors break-all"
                 >
-                  <Mail className="w-4 h-4 text-[#C6A66B]" aria-hidden="true" />
+                  <Mail className="w-4 h-4 text-[#C6A66B] shrink-0" aria-hidden="true" />
                   <span>{BUSINESS_CONTACT.email}</span>
                 </a>
               </div>
@@ -119,7 +119,7 @@ export function ContactPage() {
                   href={BUSINESS_CONTACT.whatsappHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-4 inline-flex items-center gap-2.5 px-5 py-3 bg-[#C6A66B] hover:bg-[#D4B77E] text-[#090909] text-xs font-semibold tracking-[0.14em] uppercase transition-colors"
+                  className="mt-4 w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-5 py-3.5 bg-[#C6A66B] hover:bg-[#D4B77E] text-[#090909] text-xs font-semibold tracking-[0.14em] uppercase transition-colors min-h-[44px]"
                 >
                   <MessageCircle className="w-4 h-4" aria-hidden="true" />
                   <span>Chat on WhatsApp</span>
@@ -127,7 +127,7 @@ export function ContactPage() {
               </div>
             </div>
 
-            <div className="bg-[#FAF9F6] border border-[#D8D0C2] p-7 space-y-5">
+            <div className="bg-[#FAF9F6] border border-[#D8D0C2] p-5 sm:p-7 space-y-5">
               <div className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-[#755A2B] shrink-0 mt-0.5" aria-hidden="true" />
                 <div>
@@ -160,7 +160,7 @@ export function ContactPage() {
           {/* Right: Contact Enquiry Form */}
           <div className="lg:col-span-7">
             {submitted ? (
-              <div className="bg-[#FAF9F6] border border-[#D8D0C2] p-7 sm:p-10">
+              <div className="bg-[#FAF9F6] border border-[#D8D0C2] p-5 sm:p-8 lg:p-10">
                 <div className="flex items-start justify-between gap-4 pb-6 border-b border-[#D8D0C2]">
                   <div className="flex items-start gap-3">
                     <CheckCircle2
@@ -213,7 +213,7 @@ export function ContactPage() {
               <form
                 onSubmit={handleSubmit}
                 noValidate
-                className="bg-[#FAF9F6] border border-[#D8D0C2] p-7 sm:p-10 space-y-5"
+                className="bg-[#FAF9F6] border border-[#D8D0C2] p-5 sm:p-8 lg:p-10 space-y-5"
               >
                 <div className="pb-4 border-b border-[#D8D0C2]">
                   <p className="text-xs font-semibold tracking-[0.16em] uppercase text-[#755A2B]">
@@ -316,7 +316,7 @@ export function ContactPage() {
 
                 <button
                   type="submit"
-                  className="px-7 py-3.5 bg-[#C6A66B] hover:bg-[#D4B77E] text-[#090909] text-xs font-semibold tracking-[0.15em] uppercase transition-colors cursor-pointer min-h-[44px]"
+                  className="w-full sm:w-auto px-7 py-3.5 bg-[#C6A66B] hover:bg-[#D4B77E] text-[#090909] text-xs font-semibold tracking-[0.15em] uppercase transition-colors cursor-pointer min-h-[48px] sm:min-h-[44px]"
                 >
                   Prepare Enquiry
                 </button>

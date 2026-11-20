@@ -41,7 +41,7 @@ export function Navbar({ currentRoute, onNavigate }: NavbarProps) {
 
   return (
     <header className="sticky top-0 z-50 bg-[#090909]/95 backdrop-blur-md border-b border-[#C6A66B]/20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-4 lg:gap-8">
+      <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-4 lg:gap-8">
         {/* Zone 1: Brand Wordmark */}
         <a
           href="#home"
@@ -49,7 +49,7 @@ export function Navbar({ currentRoute, onNavigate }: NavbarProps) {
             e.preventDefault();
             handleLinkClick('home');
           }}
-          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6A66B] rounded-sm py-1"
+          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6A66B] rounded-sm py-1 shrink-0"
           aria-label="Evolution Transfers Home"
         >
           <BrandWordmark variant="header" />
@@ -88,13 +88,14 @@ export function Navbar({ currentRoute, onNavigate }: NavbarProps) {
         </nav>
 
         {/* Zone 3: Primary Gold Booking CTA + Mobile Hamburger */}
-        <div className="flex items-center gap-2.5 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
           <button
             type="button"
             onClick={() => handleLinkClick('book')}
-            className="px-4 sm:px-5 py-2.5 bg-[#C6A66B] hover:bg-[#D4B77E] text-[#090909] text-xs font-semibold tracking-[0.12em] uppercase whitespace-nowrap shrink-0 transition-colors duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FAF9F6] min-h-[40px]"
+            className="px-3 sm:px-5 py-2 sm:py-2.5 bg-[#C6A66B] hover:bg-[#D4B77E] text-[#090909] text-[10px] sm:text-xs font-semibold tracking-[0.08em] sm:tracking-[0.12em] uppercase whitespace-nowrap shrink-0 transition-colors duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FAF9F6] min-h-[40px]"
           >
-            Book a Transfer
+            <span className="sm:hidden">Book Transfer</span>
+            <span className="hidden sm:inline">Book a Transfer</span>
           </button>
 
           <button
@@ -103,7 +104,7 @@ export function Navbar({ currentRoute, onNavigate }: NavbarProps) {
             aria-expanded={mobileOpen}
             aria-controls="mobile-navigation-drawer"
             aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
-            className="lg:hidden inline-flex items-center justify-center w-11 h-11 text-[#FAF9F6] hover:text-[#C6A66B] border border-[#C6A66B]/30 transition-colors duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6A66B]"
+            className="lg:hidden inline-flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 text-[#FAF9F6] hover:text-[#C6A66B] border border-[#C6A66B]/30 transition-colors duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6A66B]"
           >
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>

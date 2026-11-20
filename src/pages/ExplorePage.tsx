@@ -30,27 +30,27 @@ export function ExplorePage({ onNavigate }: ExplorePageProps) {
   return (
     <div className="bg-[#FAF9F6] text-[#090909]">
       {/* Editorial Header */}
-      <section className="bg-[#090909] text-[#FAF9F6] py-16 lg:py-24 border-b border-[#C6A66B]/20">
+      <section className="bg-[#090909] text-[#FAF9F6] py-12 sm:py-16 lg:py-24 border-b border-[#C6A66B]/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
             <p className="text-xs font-semibold tracking-[0.22em] uppercase text-[#C6A66B]">
               Destination Discovery
             </p>
-            <h1 className="mt-4 font-serif text-4xl sm:text-5xl lg:text-6xl font-normal tracking-tight text-[#FAF9F6] text-balance">
+            <h1 className="mt-3 sm:mt-4 font-serif text-4xl sm:text-5xl lg:text-6xl font-normal tracking-tight text-[#FAF9F6] text-balance">
               Explore Cape Town &amp; The Western Cape
             </h1>
-            <p className="mt-5 text-base sm:text-lg text-[#D8D0C2]/85 leading-relaxed">
+            <p className="mt-4 sm:mt-5 text-sm sm:text-lg text-[#D8D0C2]/85 leading-relaxed">
               Every landscape—from Table Mountain and Atlantic coves to historic
               Cape Winelands estates and Walker Bay cliffs—is accessible in complete
               private comfort with Evolution Transfers.
             </p>
           </div>
 
-          {/* Interactive Category Filter Bar */}
+          {/* Interactive Category Filter Bar (Horizontally scrollable on small mobile, wrapped on sm+) */}
           <div
             role="tablist"
             aria-label="Filter destinations by category"
-            className="mt-10 flex flex-wrap items-center gap-2"
+            className="mt-8 sm:mt-10 flex items-center gap-2 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:pb-0 sm:flex-wrap"
           >
             {(['All', ...DESTINATION_CATEGORIES] as CategoryFilter[]).map(
               (category) => {
@@ -62,7 +62,7 @@ export function ExplorePage({ onNavigate }: ExplorePageProps) {
                     role="tab"
                     aria-selected={active}
                     onClick={() => setSelectedCategory(category)}
-                    className={`px-4 py-2.5 text-xs font-semibold tracking-[0.12em] uppercase transition-colors cursor-pointer whitespace-nowrap min-h-[40px] ${
+                    className={`px-4 py-2.5 text-xs font-semibold tracking-[0.12em] uppercase transition-colors cursor-pointer whitespace-nowrap shrink-0 min-h-[40px] ${
                       active
                         ? 'bg-[#C6A66B] text-[#090909]'
                         : 'bg-[#202020] text-[#D8D0C2] hover:text-[#FAF9F6] border border-[#C6A66B]/20'
@@ -80,10 +80,10 @@ export function ExplorePage({ onNavigate }: ExplorePageProps) {
       {/* Complimentary Hotel Transfers Highlight */}
       <section
         aria-labelledby="explore-complimentary-heading"
-        className="pt-12 lg:pt-16"
+        className="pt-8 sm:pt-12 lg:pt-16"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-[#090909] text-[#FAF9F6] border border-[#C6A66B]/45 p-7 sm:p-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+          <div className="bg-[#090909] text-[#FAF9F6] border border-[#C6A66B]/45 p-5 sm:p-8 lg:p-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 lg:gap-8">
             <div className="max-w-2xl">
               <p className="text-xs font-semibold tracking-[0.2em] uppercase text-[#C6A66B]">
                 {COMPLIMENTARY_SHUTTLE.kicker}
@@ -126,15 +126,15 @@ export function ExplorePage({ onNavigate }: ExplorePageProps) {
       </section>
 
       {/* Categorized Destination Sections */}
-      <section className="py-14 lg:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20">
+      <section className="py-10 sm:py-14 lg:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-14 sm:space-y-20">
           {categoriesToShow.map((category) => {
             const items = DESTINATIONS.filter((d) => d.category === category);
             if (items.length === 0) return null;
 
             return (
               <div key={category}>
-                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-5 border-b border-[#D8D0C2]">
+                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-4 pb-4 sm:pb-5 border-b border-[#D8D0C2]">
                   <div>
                     <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[#755A2B]">
                       Curated Route Category
@@ -149,7 +149,7 @@ export function ExplorePage({ onNavigate }: ExplorePageProps) {
                   </span>
                 </div>
 
-                <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                   {items.map((dest) => (
                     <article
                       key={dest.id}

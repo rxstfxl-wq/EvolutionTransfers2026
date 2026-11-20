@@ -20,7 +20,7 @@ export function AboutPage({ onNavigate }: AboutPageProps) {
   return (
     <div className="bg-[#FAF9F6] text-[#090909]">
       {/* Header Band */}
-      <section className="bg-[#090909] text-[#FAF9F6] py-16 lg:py-24 border-b border-[#C6A66B]/20">
+      <section className="bg-[#090909] text-[#FAF9F6] py-12 sm:py-16 lg:py-24 border-b border-[#C6A66B]/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-7">
             <p className="text-xs font-semibold tracking-[0.22em] uppercase text-[#C6A66B]">
@@ -44,7 +44,7 @@ export function AboutPage({ onNavigate }: AboutPageProps) {
       </section>
 
       {/* Chauffeur & Concierge Split */}
-      <section className="py-16 lg:py-24 bg-[#F4F0E8] border-b border-[#D8D0C2]">
+      <section className="py-12 sm:py-16 lg:py-24 bg-[#F4F0E8] border-b border-[#D8D0C2]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-stretch">
           <div className="lg:col-span-6">
             <EditorialImage
@@ -88,7 +88,7 @@ export function AboutPage({ onNavigate }: AboutPageProps) {
               <button
                 type="button"
                 onClick={() => onNavigate('book')}
-                className="inline-flex items-center gap-2.5 px-7 py-3.5 bg-[#090909] hover:bg-[#202020] text-[#FAF9F6] text-xs font-semibold tracking-[0.15em] uppercase transition-colors cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 bg-[#090909] hover:bg-[#202020] text-[#FAF9F6] text-xs font-semibold tracking-[0.15em] uppercase transition-colors cursor-pointer min-h-[48px] sm:min-h-[44px]"
               >
                 <span>Request a Private Transfer</span>
                 <ArrowRight className="w-4 h-4 text-[#C6A66B]" aria-hidden="true" />
@@ -99,7 +99,7 @@ export function AboutPage({ onNavigate }: AboutPageProps) {
       </section>
 
       {/* Fleet & Cabin Comfort */}
-      <section className="py-16 lg:py-24 bg-[#FAF9F6]">
+      <section className="py-12 sm:py-16 lg:py-24 bg-[#FAF9F6]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
             <p className="text-xs font-semibold tracking-[0.2em] uppercase text-[#755A2B]">

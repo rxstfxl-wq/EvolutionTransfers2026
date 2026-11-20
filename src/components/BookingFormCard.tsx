@@ -232,7 +232,7 @@ export function BookingFormCard({
     <form
       onSubmit={handleSubmit}
       noValidate
-      className="bg-[#FAF9F6] border border-[#D8D0C2] p-6 sm:p-8 lg:p-10 text-[#090909]"
+      className="bg-[#FAF9F6] border border-[#D8D0C2] p-5 sm:p-8 lg:p-10 text-[#090909]"
     >
       <datalist id="cape-town-locations">
         {QUICK_LOCATIONS.map((loc) => (
@@ -241,7 +241,7 @@ export function BookingFormCard({
       </datalist>
 
       {/* Top Row: Heading & Trip Type Segmented Toggle */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-[#D8D0C2]">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-5 sm:pb-6 border-b border-[#D8D0C2]">
         <div>
           <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[#755A2B]">
             {variant === 'shortcut' ? 'Direct Transfer Enquiry' : 'Private Transfer Request'}
@@ -256,7 +256,7 @@ export function BookingFormCard({
         <div
           role="group"
           aria-label="Trip type"
-          className="inline-flex border border-[#D8D0C2] bg-[#F4F0E8] p-1 self-start md:self-auto"
+          className="grid grid-cols-2 sm:inline-flex border border-[#D8D0C2] bg-[#F4F0E8] p-1 w-full sm:w-auto self-start md:self-auto"
         >
           {(['one-way', 'return'] as TripType[]).map((type) => {
             const active = form.tripType === type;
@@ -265,7 +265,7 @@ export function BookingFormCard({
                 key={type}
                 type="button"
                 onClick={() => updateField('tripType', type)}
-                className={`px-4 py-2 text-xs font-semibold tracking-[0.12em] uppercase transition-colors cursor-pointer whitespace-nowrap ${
+                className={`px-4 py-2.5 sm:py-2 text-xs font-semibold tracking-[0.12em] uppercase transition-colors cursor-pointer whitespace-nowrap min-h-[40px] ${
                   active
                     ? 'bg-[#090909] text-[#FAF9F6]'
                     : 'text-[#202020]/75 hover:text-[#090909]'
@@ -578,25 +578,25 @@ export function BookingFormCard({
       )}
 
       {/* Submit Bar */}
-      <div className="mt-6 pt-6 border-t border-[#D8D0C2] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="mt-6 pt-5 sm:pt-6 border-t border-[#D8D0C2] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <p className="text-xs text-[#202020]/70 leading-relaxed">
           Enquiry-based request — no upfront card payment required. Our team responds
           directly via WhatsApp or email to confirm your schedule.
         </p>
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
+        <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 shrink-0">
           {variant === 'shortcut' && onOpenFullBooking && (
             <button
               type="button"
               onClick={() => onOpenFullBooking(form)}
-              className="px-4 py-3 text-xs font-semibold tracking-[0.12em] uppercase text-[#202020] hover:text-[#755A2B] transition-colors cursor-pointer whitespace-nowrap"
+              className="px-4 py-3 text-xs font-semibold tracking-[0.12em] uppercase text-[#202020] hover:text-[#755A2B] transition-colors cursor-pointer whitespace-nowrap min-h-[44px]"
             >
               Add Flight / Tour Notes →
             </button>
           )}
           <button
             type="submit"
-            className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 bg-[#C6A66B] hover:bg-[#D4B77E] text-[#090909] text-xs font-semibold tracking-[0.15em] uppercase transition-colors cursor-pointer whitespace-nowrap min-h-[44px]"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 bg-[#C6A66B] hover:bg-[#D4B77E] text-[#090909] text-xs font-semibold tracking-[0.15em] uppercase transition-colors cursor-pointer whitespace-nowrap min-h-[48px] sm:min-h-[44px]"
           >
             <span>Request My Transfer</span>
             <ArrowRight className="w-4 h-4" aria-hidden="true" />

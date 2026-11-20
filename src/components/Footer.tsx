@@ -13,21 +13,21 @@ interface FooterProps {
 export function Footer({ onNavigate }: FooterProps) {
   return (
     <footer className="bg-[#090909] text-[#FAF9F6] border-t border-[#C6A66B]/25">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+        <div className="grid grid-cols-2 lg:grid-cols-12 gap-x-6 gap-y-10 lg:gap-8">
           {/* Column 1: Brand Statement & Wordmark */}
-          <div className="lg:col-span-4 flex flex-col items-start">
+          <div className="col-span-2 lg:col-span-4 flex flex-col items-start">
             <BrandWordmark variant="stacked" showTagline={true} className="items-start text-left" />
             <p className="mt-5 text-sm text-[#D8D0C2]/80 leading-relaxed max-w-sm">
               Private Cape Town chauffeur transfers, airport arrivals, and bespoke
               Western Cape journeys crafted around punctuality, quiet luxury, and
               hospitality.
             </p>
-            <div className="mt-6">
+            <div className="mt-6 w-full sm:w-auto">
               <button
                 type="button"
                 onClick={() => onNavigate('book')}
-                className="px-6 py-3 bg-[#C6A66B] hover:bg-[#D4B77E] text-[#090909] text-xs font-semibold tracking-[0.14em] uppercase transition-colors cursor-pointer"
+                className="w-full sm:w-auto px-6 py-3.5 bg-[#C6A66B] hover:bg-[#D4B77E] text-[#090909] text-xs font-semibold tracking-[0.14em] uppercase transition-colors cursor-pointer min-h-[44px]"
               >
                 Book a Transfer
               </button>
@@ -35,7 +35,7 @@ export function Footer({ onNavigate }: FooterProps) {
           </div>
 
           {/* Column 2: Quick Navigation */}
-          <div className="lg:col-span-2">
+          <div className="col-span-1 lg:col-span-2">
             <h3 className="text-xs font-semibold tracking-[0.18em] uppercase text-[#C6A66B]">
               Navigation
             </h3>
@@ -104,7 +104,7 @@ export function Footer({ onNavigate }: FooterProps) {
           </div>
 
           {/* Column 3: Services */}
-          <div className="lg:col-span-3">
+          <div className="col-span-1 lg:col-span-3">
             <h3 className="text-xs font-semibold tracking-[0.18em] uppercase text-[#C6A66B]">
               Services
             </h3>
@@ -124,7 +124,7 @@ export function Footer({ onNavigate }: FooterProps) {
           </div>
 
           {/* Column 4: Verified Contact & Social */}
-          <div className="lg:col-span-3">
+          <div className="col-span-2 lg:col-span-3">
             <h3 className="text-xs font-semibold tracking-[0.18em] uppercase text-[#C6A66B]">
               Direct Concierge
             </h3>

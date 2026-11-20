@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import {
   ArrowRight,
   CalendarCheck,
@@ -5,7 +6,9 @@ import {
   Clock,
   Compass,
   UserCheck,
+  X,
 } from 'lucide-react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { BookingFormCard } from '../components/BookingFormCard';
 import { EditorialImage } from '../components/EditorialImage';
 import { ExploreHighlightsCarousel } from '../components/ExploreHighlightsCarousel';
@@ -29,6 +32,8 @@ interface HomePageProps {
   ) => void;
 }
 
+const MOBILE_POPUP_DURATION_MS = 7000;
+
 function renderReasonIcon(name: (typeof WHY_CHOOSE_ITEMS)[number]['iconName']) {
   const cls = 'w-5 h-5 text-[#C6A66B] stroke-[1.5]';
   switch (name) {
@@ -46,6 +51,44 @@ function renderReasonIcon(name: (typeof WHY_CHOOSE_ITEMS)[number]['iconName']) {
 }
 
 export function HomePage({ onNavigate }: HomePageProps) {
+  const shouldReduceMotion = useReducedMotion();
+  const [isMobileViewport, setIsMobileViewport] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(max-width: 767px)').matches;
+  });
+  const [showMobileShuttlePopup, setShowMobileShuttlePopup] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    const handleViewportChange = (event: MediaQueryListEvent) => {
+      setIsMobileViewport(event.matches);
+    };
+    setIsMobileViewport(mediaQuery.matches);
+    mediaQuery.addEventListener('change', handleViewportChange);
+    return () => mediaQuery.removeEventListener('change', handleViewportChange);
+  }, []);
+
+  useEffect(() => {
+    if (!isMobileViewport || !showMobileShuttlePopup) return;
+
+    const dismissTimer = window.setTimeout(() => {
+      setShowMobileShuttlePopup(false);
+    }, MOBILE_POPUP_DURATION_MS);
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setShowMobileShuttlePopup(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.clearTimeout(dismissTimer);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isMobileViewport, showMobileShuttlePopup]);
+
   const scrollToBookingShortcut = () => {
     const el = document.getElementById('booking-shortcut');
     if (el) {
@@ -57,24 +100,127 @@ export function HomePage({ onNavigate }: HomePageProps) {
 
   const handleOpenFullBooking = (draft?: Partial<TransferEnquiry>) => {
     onNavigate('book', {
+      pickupLocation: draft?.pickupLocation,
       destination: draft?.destination,
       serviceType: draft?.serviceType,
     });
   };
 
+  const handleComplimentarySelect = (dest: string) => {
+    setShowMobileShuttlePopup(false);
+    onNavigate('book', {
+      pickupLocation: COMPLIMENTARY_SHUTTLE.pickupLocation,
+      destination: dest,
+      serviceType: 'hotel-private',
+    });
+  };
+
   return (
     <div>
-      {/* 1. HERO SECTION */}
+      {/* MOBILE POP-UP: COMPLIMENTARY HOTEL SHUTTLE (7 SECONDS ON LANDING OPEN / REFRESH) */}
+      <AnimatePresence>
+        {isMobileViewport && showMobileShuttlePopup && (
+          <motion.div
+            key="mobile-shuttle-popup"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="mobile-shuttle-popup-title"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: shouldReduceMotion ? 0 : 0.28 }}
+            onClick={() => setShowMobileShuttlePopup(false)}
+            className="md:hidden fixed inset-0 z-50 bg-[#090909]/75 backdrop-blur-[2px] flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.97 }}
+              animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+              exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.98 }}
+              transition={{ duration: shouldReduceMotion ? 0 : 0.32, ease: [0.16, 1, 0.3, 1] }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-sm bg-[#090909] text-[#FAF9F6] border border-[#C6A66B]/60 p-5 shadow-2xl overflow-hidden"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <p className="text-[11px] font-semibold tracking-[0.18em] uppercase text-[#C6A66B] pt-1">
+                  {COMPLIMENTARY_SHUTTLE.kicker}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setShowMobileShuttlePopup(false)}
+                  aria-label="Close complimentary shuttle notice"
+                  className="w-9 h-9 -mt-1 -mr-1 inline-flex items-center justify-center border border-[#C6A66B]/30 text-[#D8D0C2] hover:text-[#FAF9F6] hover:border-[#C6A66B] transition-colors cursor-pointer shrink-0"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <p
+                id="mobile-shuttle-popup-title"
+                className="mt-2 font-serif text-xl text-[#FAF9F6] leading-snug"
+              >
+                {COMPLIMENTARY_SHUTTLE.title}
+              </p>
+              <p className="mt-1.5 text-sm text-[#D8D0C2] leading-relaxed">
+                {COMPLIMENTARY_SHUTTLE.routeSummary}
+              </p>
+
+              <div className="mt-5 grid grid-cols-1 gap-2.5">
+                {COMPLIMENTARY_SHUTTLE.destinations.map((dest) => (
+                  <button
+                    key={dest}
+                    type="button"
+                    onClick={() => handleComplimentarySelect(dest)}
+                    className="inline-flex items-center justify-between gap-2 px-4 py-3 bg-[#C6A66B] hover:bg-[#D4B77E] text-[#090909] text-xs font-semibold tracking-[0.12em] uppercase transition-colors cursor-pointer min-h-[44px]"
+                  >
+                    <span>{dest}</span>
+                    <ArrowRight className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                  </button>
+                ))}
+              </div>
+
+              {!shouldReduceMotion && (
+                <motion.div
+                  aria-hidden="true"
+                  initial={{ scaleX: 1 }}
+                  animate={{ scaleX: 0 }}
+                  transition={{
+                    duration: MOBILE_POPUP_DURATION_MS / 1000,
+                    ease: 'linear',
+                  }}
+                  className="absolute left-0 right-0 bottom-0 h-0.5 bg-[#C6A66B] origin-left"
+                />
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 1. HERO SECTION (Mobile: clean top photographic frame -> obsidian copy; Desktop: full-bleed widescreen) */}
       <section
         aria-labelledby="hero-heading"
-        className="relative bg-[#090909] text-[#FAF9F6] overflow-hidden min-h-[540px] lg:min-h-[680px] flex items-center"
+        className="relative bg-[#090909] text-[#FAF9F6] overflow-hidden lg:min-h-[680px] flex flex-col lg:flex-row lg:items-center"
       >
-        <div className="absolute inset-0">
+        {/* Mobile & Tablet Top Photo Frame */}
+        <div className="relative w-full h-64 sm:h-80 lg:hidden overflow-hidden">
           <img
             src={HERO_MEDIA.image}
             alt={HERO_MEDIA.alt}
             referrerPolicy="no-referrer"
-            className="w-full h-full object-cover object-center lg:object-[70%_center]"
+            className="w-full h-full object-cover object-[38%_55%]"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-gradient-to-t from-[#090909] via-[#090909]/20 to-transparent"
+          />
+        </div>
+
+        {/* Desktop Full-Bleed Background Image */}
+        <div className="hidden lg:block absolute inset-0">
+          <img
+            src={HERO_MEDIA.image}
+            alt={HERO_MEDIA.alt}
+            referrerPolicy="no-referrer"
+            className="w-full h-full object-cover object-[70%_center]"
           />
           <div
             aria-hidden="true"
@@ -86,41 +232,41 @@ export function HomePage({ onNavigate }: HomePageProps) {
           />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+        <div className="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-4 pb-12 sm:pt-6 sm:pb-16 lg:py-28">
           <div className="max-w-xl">
-            <p className="text-xs font-semibold tracking-[0.22em] uppercase text-[#C6A66B]">
+            <p className="text-[11px] sm:text-xs font-semibold tracking-[0.2em] sm:tracking-[0.22em] uppercase text-[#C6A66B]">
               Cape Town Private Transfers &amp; Chauffeur Service
             </p>
             <h1
               id="hero-heading"
-              className="mt-4 font-serif text-4xl sm:text-5xl lg:text-6xl font-normal tracking-tight leading-[1.06] text-[#FAF9F6] text-balance"
+              className="mt-3 sm:mt-4 font-serif text-4xl sm:text-5xl lg:text-6xl font-normal tracking-tight leading-[1.06] text-[#FAF9F6] text-balance"
             >
               Your Journey, Evolved.
             </h1>
-            <p className="mt-5 text-base sm:text-lg text-[#F4F0E8]/90 leading-relaxed max-w-lg">
+            <p className="mt-4 sm:mt-5 text-sm sm:text-lg text-[#F4F0E8]/90 leading-relaxed max-w-lg">
               Experience Cape Town with comfortable, reliable and professional private
               transfers. From airport arrivals to unforgettable local journeys,
               travel with confidence.
             </p>
 
-            <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
+            <div className="mt-7 sm:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-3.5">
               <button
                 type="button"
                 onClick={scrollToBookingShortcut}
-                className="px-7 py-4 bg-[#C6A66B] hover:bg-[#D4B77E] text-[#090909] text-xs font-semibold tracking-[0.16em] uppercase transition-colors cursor-pointer whitespace-nowrap min-h-[48px]"
+                className="w-full sm:w-auto px-7 py-4 bg-[#C6A66B] hover:bg-[#D4B77E] text-[#090909] text-xs font-semibold tracking-[0.16em] uppercase transition-colors cursor-pointer whitespace-nowrap min-h-[48px]"
               >
                 Book Your Transfer
               </button>
               <button
                 type="button"
                 onClick={() => onNavigate('explore')}
-                className="px-7 py-4 border border-[#C6A66B]/80 hover:border-[#C6A66B] hover:bg-[#C6A66B]/12 text-[#FAF9F6] text-xs font-semibold tracking-[0.16em] uppercase transition-colors cursor-pointer whitespace-nowrap min-h-[48px]"
+                className="w-full sm:w-auto px-7 py-4 border border-[#C6A66B]/80 hover:border-[#C6A66B] hover:bg-[#C6A66B]/12 text-[#FAF9F6] text-xs font-semibold tracking-[0.16em] uppercase transition-colors cursor-pointer whitespace-nowrap min-h-[48px]"
               >
                 Explore Cape Town
               </button>
             </div>
 
-            <p className="mt-8 pt-6 border-t border-[#FAF9F6]/15 text-xs tracking-[0.08em] text-[#D8D0C2]/90 leading-relaxed">
+            <p className="mt-7 sm:mt-8 pt-5 sm:pt-6 border-t border-[#FAF9F6]/15 text-xs tracking-[0.06em] sm:tracking-[0.08em] text-[#D8D0C2]/90 leading-relaxed">
               <span className="text-[#C6A66B] font-semibold">
                 {COMPLIMENTARY_SHUTTLE.title}:
               </span>{' '}
@@ -134,37 +280,31 @@ export function HomePage({ onNavigate }: HomePageProps) {
       <section
         id="booking-shortcut"
         aria-label="Quick Transfer Booking Enquiry"
-        className="bg-[#F4F0E8] py-14 lg:py-20 border-b border-[#D8D0C2]"
+        className="bg-[#F4F0E8] py-10 sm:py-14 lg:py-20 border-b border-[#D8D0C2]"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <div className="bg-[#090909] text-[#FAF9F6] border border-[#C6A66B]/40 p-5 sm:p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5 sm:space-y-6">
+          <div className="hidden md:flex bg-[#090909] text-[#FAF9F6] border border-[#C6A66B]/40 p-4 sm:p-6 flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div>
               <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[#C6A66B]">
                 {COMPLIMENTARY_SHUTTLE.kicker}
               </p>
-              <p className="mt-1 font-serif text-xl sm:text-2xl text-[#FAF9F6]">
+              <p className="mt-1 font-serif text-lg sm:text-2xl text-[#FAF9F6] leading-snug">
                 {COMPLIMENTARY_SHUTTLE.title} —{' '}
                 <span className="text-[#D8D0C2]">
                   {COMPLIMENTARY_SHUTTLE.routeSummary}
                 </span>
               </p>
             </div>
-            <div className="flex flex-wrap items-center gap-3 shrink-0">
+            <div className="grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-2.5 sm:gap-3 shrink-0">
               {COMPLIMENTARY_SHUTTLE.destinations.map((dest) => (
                 <button
                   key={dest}
                   type="button"
-                  onClick={() =>
-                    onNavigate('book', {
-                      pickupLocation: COMPLIMENTARY_SHUTTLE.pickupLocation,
-                      destination: dest,
-                      serviceType: 'hotel-private',
-                    })
-                  }
-                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#C6A66B] hover:bg-[#D4B77E] text-[#090909] text-xs font-semibold tracking-[0.12em] uppercase transition-colors cursor-pointer whitespace-nowrap"
+                  onClick={() => handleComplimentarySelect(dest)}
+                  className="inline-flex items-center justify-between sm:justify-center gap-2 px-4 py-2.5 bg-[#C6A66B] hover:bg-[#D4B77E] text-[#090909] text-xs font-semibold tracking-[0.12em] uppercase transition-colors cursor-pointer whitespace-nowrap min-h-[44px]"
                 >
                   <span>{dest}</span>
-                  <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+                  <ArrowRight className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
                 </button>
               ))}
             </div>
@@ -199,17 +339,17 @@ export function HomePage({ onNavigate }: HomePageProps) {
       <section
         id="services"
         aria-labelledby="services-heading"
-        className="bg-[#F4F0E8] text-[#090909] py-20 lg:py-24"
+        className="bg-[#F4F0E8] text-[#090909] py-14 sm:py-20 lg:py-24"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-10 border-b border-[#D8D0C2]">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 pb-8 lg:pb-10 border-b border-[#D8D0C2]">
             <div className="max-w-2xl">
               <p className="text-xs font-semibold tracking-[0.2em] uppercase text-[#755A2B]">
                 Our Services
               </p>
               <h2
                 id="services-heading"
-                className="mt-3 font-serif text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-[#090909] text-balance"
+                className="mt-2.5 sm:mt-3 font-serif text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-[#090909] text-balance"
               >
                 Tailored Private Mobility Across Cape Town
               </h2>
@@ -220,7 +360,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
             </p>
           </div>
 
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="mt-8 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
             {SERVICES.map((service) => (
               <article
                 key={service.id}
@@ -233,7 +373,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
                   className="aspect-[4/3] w-full"
                   imgClassName="transition-transform duration-500 group-hover:scale-[1.03]"
                 />
-                <div className="p-6 flex-1 flex flex-col justify-between">
+                <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between">
                   <div>
                     <p className="text-xs font-semibold tracking-[0.16em] text-[#755A2B] tabular-nums">
                       {service.index}
@@ -246,13 +386,13 @@ export function HomePage({ onNavigate }: HomePageProps) {
                     </p>
                   </div>
 
-                  <div className="mt-6 pt-4 border-t border-[#D8D0C2]">
+                  <div className="mt-5 sm:mt-6 pt-4 border-t border-[#D8D0C2]">
                     <button
                       type="button"
                       onClick={() =>
                         onNavigate('book', { serviceType: service.id })
                       }
-                      className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.14em] uppercase text-[#090909] hover:text-[#755A2B] transition-colors cursor-pointer py-1"
+                      className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.14em] uppercase text-[#090909] hover:text-[#755A2B] transition-colors cursor-pointer py-1.5"
                     >
                       <span>Explore Service</span>
                       <ArrowRight className="w-3.5 h-3.5 text-[#C6A66B]" aria-hidden="true" />
@@ -268,7 +408,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
       {/* 5. WHY CHOOSE EVOLUTION */}
       <section
         aria-labelledby="why-evolution-heading"
-        className="bg-[#FAF9F6] text-[#090909] py-20 lg:py-24 border-t border-[#D8D0C2]"
+        className="bg-[#FAF9F6] text-[#090909] py-14 sm:py-20 lg:py-24 border-t border-[#D8D0C2]"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
@@ -277,27 +417,29 @@ export function HomePage({ onNavigate }: HomePageProps) {
             </p>
             <h2
               id="why-evolution-heading"
-              className="mt-3 font-serif text-3xl sm:text-4xl font-normal tracking-tight text-[#090909] text-balance"
+              className="mt-2.5 sm:mt-3 font-serif text-3xl sm:text-4xl font-normal tracking-tight text-[#090909] text-balance"
             >
               Why Guests &amp; Concierges Choose Evolution Transfers
             </h2>
           </div>
 
-          <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className="mt-8 sm:mt-12 divide-y divide-[#D8D0C2] sm:divide-y-0 sm:grid sm:grid-cols-2 lg:grid-cols-5 sm:gap-6">
             {WHY_CHOOSE_ITEMS.map((item) => (
               <div
                 key={item.id}
-                className="pt-6 border-t border-[#C6A66B]/60 flex flex-col"
+                className="py-5 sm:py-0 sm:pt-6 sm:border-t sm:border-[#C6A66B]/60 flex flex-row sm:flex-col items-start gap-4 sm:gap-0"
               >
-                <div className="w-10 h-10 bg-[#090909] flex items-center justify-center mb-4">
+                <div className="w-10 h-10 bg-[#090909] flex items-center justify-center shrink-0 sm:mb-4">
                   {renderReasonIcon(item.iconName)}
                 </div>
-                <h3 className="font-serif text-xl font-medium text-[#090909]">
-                  {item.title}
-                </h3>
-                <p className="mt-2 text-sm text-[#202020]/75 leading-relaxed">
-                  {item.description}
-                </p>
+                <div>
+                  <h3 className="font-serif text-xl font-medium text-[#090909]">
+                    {item.title}
+                  </h3>
+                  <p className="mt-1.5 sm:mt-2 text-sm text-[#202020]/75 leading-relaxed">
+                    {item.description}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
@@ -307,7 +449,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
       {/* 6. FINAL CTA */}
       <section
         aria-labelledby="final-cta-heading"
-        className="bg-[#202020] text-[#FAF9F6] py-20 lg:py-24 border-t border-[#C6A66B]/25"
+        className="bg-[#202020] text-[#FAF9F6] py-14 sm:py-20 lg:py-24 border-t border-[#C6A66B]/25"
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-xs font-semibold tracking-[0.22em] uppercase text-[#C6A66B]">
@@ -315,7 +457,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
           </p>
           <h2
             id="final-cta-heading"
-            className="mt-4 font-serif text-3xl sm:text-5xl font-normal tracking-tight text-[#FAF9F6] text-balance"
+            className="mt-3 sm:mt-4 font-serif text-3xl sm:text-5xl font-normal tracking-tight text-[#FAF9F6] text-balance"
           >
             Wherever You&rsquo;re Going, Let&rsquo;s Get You There.
           </h2>
@@ -323,18 +465,18 @@ export function HomePage({ onNavigate }: HomePageProps) {
             Whether arriving at Cape Town International Airport or planning a coastal
             day across the peninsula, request your transfer in seconds.
           </p>
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="mt-7 sm:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3.5 sm:gap-4">
             <button
               type="button"
               onClick={() => onNavigate('book')}
-              className="px-8 py-4 bg-[#C6A66B] hover:bg-[#D4B77E] text-[#090909] text-xs font-semibold tracking-[0.16em] uppercase transition-colors cursor-pointer min-h-[48px]"
+              className="w-full sm:w-auto px-8 py-4 bg-[#C6A66B] hover:bg-[#D4B77E] text-[#090909] text-xs font-semibold tracking-[0.16em] uppercase transition-colors cursor-pointer min-h-[48px]"
             >
               Book Your Transfer
             </button>
             <button
               type="button"
               onClick={() => onNavigate('contact')}
-              className="px-8 py-4 border border-[#C6A66B]/60 hover:border-[#C6A66B] text-[#FAF9F6] text-xs font-semibold tracking-[0.16em] uppercase transition-colors cursor-pointer min-h-[48px]"
+              className="w-full sm:w-auto px-8 py-4 border border-[#C6A66B]/60 hover:border-[#C6A66B] text-[#FAF9F6] text-xs font-semibold tracking-[0.16em] uppercase transition-colors cursor-pointer min-h-[48px]"
             >
               Speak With Concierge
             </button>

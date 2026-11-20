@@ -17,7 +17,7 @@ export function BookingPage({
   return (
     <div className="bg-[#F4F0E8] text-[#090909]">
       {/* Header */}
-      <section className="bg-[#090909] text-[#FAF9F6] py-14 lg:py-20 border-b border-[#C6A66B]/20">
+      <section className="bg-[#090909] text-[#FAF9F6] py-12 sm:py-14 lg:py-20 border-b border-[#C6A66B]/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <p className="text-xs font-semibold tracking-[0.22em] uppercase text-[#C6A66B]">
             Reservations &amp; Transfer Enquiries
@@ -34,8 +34,8 @@ export function BookingPage({
       </section>
 
       {/* Main Content */}
-      <section className="py-12 lg:py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <section className="py-10 sm:py-12 lg:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
           <div className="lg:col-span-8">
             <BookingFormCard
               variant="full"
@@ -46,7 +46,7 @@ export function BookingPage({
           </div>
 
           <aside className="lg:col-span-4 space-y-6">
-            <div className="bg-[#090909] text-[#FAF9F6] p-6 sm:p-8 border border-[#C6A66B]/25">
+            <div className="bg-[#090909] text-[#FAF9F6] p-5 sm:p-8 border border-[#C6A66B]/25">
               <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[#C6A66B]">
                 Prefer Instant Assistance?
               </p>
