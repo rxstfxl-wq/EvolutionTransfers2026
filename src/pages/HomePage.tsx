@@ -8,8 +8,17 @@ import {
   UserCheck,
   X,
 } from 'lucide-react';
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import {
+  AnimatePresence,
+  motion,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+  useVelocity,
+} from 'motion/react';
 import { BookingFormCard } from '../components/BookingFormCard';
+import { BookingGuideNotice } from '../components/BookingGuideNotice';
 import { EditorialImage } from '../components/EditorialImage';
 import { ExploreHighlightsCarousel } from '../components/ExploreHighlightsCarousel';
 import {
@@ -52,8 +61,40 @@ function renderReasonIcon(name: (typeof WHY_CHOOSE_ITEMS)[number]['iconName']) {
 
 export function HomePage({ onNavigate }: HomePageProps) {
   const shouldReduceMotion = useReducedMotion();
+  const heroSectionRef = useRef<HTMLElement | null>(null);
+  const heroVideoRef = useRef<HTMLVideoElement | null>(null);
+  const scrubbedTimeRef = useRef<number>(0);
   const bookingSectionRef = useRef<HTMLElement | null>(null);
   const hasTriggeredDesktopPopupRef = useRef<boolean>(false);
+
+  const { scrollY, scrollYProgress } = useScroll({
+    target: heroSectionRef,
+    offset: ['start start', 'end start'],
+  });
+  const scrollVelocity = useVelocity(scrollY);
+  const smoothVelocity = useSpring(scrollVelocity, {
+    stiffness: 120,
+    damping: 24,
+    mass: 0.5,
+  });
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 140,
+    damping: 26,
+    mass: 0.35,
+  });
+
+  const parallaxY = useTransform(
+    [smoothProgress, smoothVelocity],
+    ([p, v]: number[]) => {
+      const basePct = -5 + p * 12;
+      const speedLagPct = Math.max(-2.2, Math.min(2.2, (v / 2200) * 2.2));
+      return `${(basePct + speedLagPct).toFixed(2)}%`;
+    }
+  );
+  const parallaxScale = useTransform(
+    smoothVelocity,
+    (v: number) => 1.18 + Math.min(0.05, Math.abs(v) / 35000)
+  );
 
   const [isMobileViewport, setIsMobileViewport] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
@@ -124,6 +165,91 @@ export function HomePage({ onNavigate }: HomePageProps) {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [showShuttlePopup]);
+
+  // Hero video timestamp synced to scroll position and scroll speed
+  useEffect(() => {
+    if (shouldReduceMotion) return;
+    const video = heroVideoRef.current;
+    if (!video) return;
+
+    let rafId: number | null = null;
+
+    const tick = () => {
+      rafId = null;
+      const duration = video.duration;
+      if (!Number.isFinite(duration) || duration <= 0) return;
+
+      const maxTime = Math.max(0, duration - 0.05);
+      const progress = Math.max(0, Math.min(1, scrollYProgress.get()));
+      const velocityPxPerSec = scrollVelocity.get();
+      const speedNorm = Math.min(1, Math.abs(velocityPxPerSec) / 2400);
+
+      // Faster scroll accelerates scrub responsiveness and adds subtle directional momentum
+      const velocityOffset = Math.max(
+        -0.45,
+        Math.min(0.45, (velocityPxPerSec / 2400) * 0.45)
+      );
+      const targetTime = Math.max(
+        0,
+        Math.min(maxTime, progress * maxTime + velocityOffset)
+      );
+
+      const lerpFactor = 0.1 + speedNorm * 0.28;
+      scrubbedTimeRef.current += (targetTime - scrubbedTimeRef.current) * lerpFactor;
+
+      if (
+        !video.seeking &&
+        Math.abs(video.currentTime - scrubbedTimeRef.current) > 0.016
+      ) {
+        video.currentTime = scrubbedTimeRef.current;
+      }
+
+      if (
+        Math.abs(targetTime - scrubbedTimeRef.current) > 0.008 ||
+        Math.abs(velocityPxPerSec) > 5
+      ) {
+        rafId = window.requestAnimationFrame(tick);
+      }
+    };
+
+    const scheduleTick = () => {
+      if (rafId === null) {
+        rafId = window.requestAnimationFrame(tick);
+      }
+    };
+
+    const handleLoadedMetadata = () => {
+      video.pause();
+      const duration = video.duration;
+      if (Number.isFinite(duration) && duration > 0) {
+        const initialProgress = Math.max(0, Math.min(1, scrollYProgress.get()));
+        const initialTime = Math.max(
+          0.02,
+          Math.min(Math.max(0, duration - 0.05), initialProgress * (duration - 0.05))
+        );
+        scrubbedTimeRef.current = initialTime;
+        video.currentTime = initialTime;
+      }
+      scheduleTick();
+    };
+
+    video.addEventListener('loadedmetadata', handleLoadedMetadata);
+    if (video.readyState >= 1) {
+      handleLoadedMetadata();
+    }
+
+    const unsubscribeProgress = scrollYProgress.on('change', scheduleTick);
+    const unsubscribeVelocity = scrollVelocity.on('change', scheduleTick);
+
+    return () => {
+      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      unsubscribeProgress();
+      unsubscribeVelocity();
+      if (rafId !== null) {
+        window.cancelAnimationFrame(rafId);
+      }
+    };
+  }, [shouldReduceMotion, scrollYProgress, scrollVelocity]);
 
   const scrollToBookingShortcut = () => {
     const el = document.getElementById('booking-shortcut');
@@ -233,40 +359,40 @@ export function HomePage({ onNavigate }: HomePageProps) {
         )}
       </AnimatePresence>
 
-      {/* 1. HERO SECTION (Mobile: clean top photographic frame -> obsidian copy; Desktop: full-bleed widescreen) */}
+      {/* 1. HERO SECTION (Mobile: top scroll-linked video frame -> obsidian copy; Desktop: full-bleed scroll-linked video) */}
       <section
+        ref={heroSectionRef}
         aria-labelledby="hero-heading"
         className="relative bg-[#090909] text-[#FAF9F6] overflow-hidden lg:min-h-[680px] flex flex-col lg:flex-row lg:items-center"
       >
-        {/* Mobile & Tablet Top Photo Frame */}
-        <div className="relative w-full h-64 sm:h-80 lg:hidden overflow-hidden">
-          <img
-            src={HERO_MEDIA.image}
-            alt={HERO_MEDIA.alt}
-            referrerPolicy="no-referrer"
-            className="w-full h-full object-cover object-[38%_55%]"
+        {/* Unified Responsive Scroll-Parallax & Scrubbed Video Frame */}
+        <div className="relative w-full h-64 sm:h-80 lg:h-full lg:absolute lg:inset-0 overflow-hidden">
+          <motion.video
+            ref={heroVideoRef}
+            src={HERO_MEDIA.video}
+            poster={HERO_MEDIA.image}
+            muted
+            playsInline
+            preload="auto"
+            aria-label={HERO_MEDIA.videoAlt}
+            style={
+              shouldReduceMotion
+                ? undefined
+                : { y: parallaxY, scale: parallaxScale }
+            }
+            className="w-full h-full object-cover object-[38%_55%] lg:object-[70%_center] will-change-transform"
           />
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-t from-[#090909] via-[#090909]/20 to-transparent"
-          />
-        </div>
-
-        {/* Desktop Full-Bleed Background Image */}
-        <div className="hidden lg:block absolute inset-0">
-          <img
-            src={HERO_MEDIA.image}
-            alt={HERO_MEDIA.alt}
-            referrerPolicy="no-referrer"
-            className="w-full h-full object-cover object-[70%_center]"
+            className="lg:hidden absolute inset-0 bg-gradient-to-t from-[#090909] via-[#090909]/20 to-transparent pointer-events-none"
           />
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-r from-[#090909]/92 via-[#090909]/68 to-[#090909]/20"
+            className="hidden lg:block absolute inset-0 bg-gradient-to-r from-[#090909]/92 via-[#090909]/68 to-[#090909]/20 pointer-events-none"
           />
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-t from-[#090909]/85 via-transparent to-[#090909]/40"
+            className="hidden lg:block absolute inset-0 bg-gradient-to-t from-[#090909]/85 via-transparent to-[#090909]/40 pointer-events-none"
           />
         </div>
 
@@ -319,9 +445,10 @@ export function HomePage({ onNavigate }: HomePageProps) {
         ref={bookingSectionRef}
         id="booking-shortcut"
         aria-label="Quick Transfer Booking Enquiry"
-        className="bg-[#2C2A26] py-10 sm:py-14 lg:py-20 border-b border-[#D8D0C2]"
+        className="bg-[#F4F0E8] py-10 sm:py-14 lg:py-20 border-b border-[#D8D0C2]"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <BookingGuideNotice />
           <BookingFormCard
             variant="shortcut"
             onOpenFullBooking={handleOpenFullBooking}

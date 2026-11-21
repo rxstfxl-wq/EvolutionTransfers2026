@@ -1,5 +1,6 @@
 import { Mail, MessageCircle, Phone, ShieldCheck } from 'lucide-react';
 import { BookingFormCard } from '../components/BookingFormCard';
+import { BookingGuideNotice } from '../components/BookingGuideNotice';
 import { BUSINESS_CONTACT } from '../data/catalog';
 import { ServiceTypeId } from '../types';
 
@@ -37,6 +38,7 @@ export function BookingPage({
       <section className="py-10 sm:py-12 lg:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
           <div className="lg:col-span-8">
+            <BookingGuideNotice />
             <BookingFormCard
               variant="full"
               prefilledPickupLocation={prefilledPickupLocation}
