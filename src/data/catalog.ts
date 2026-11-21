@@ -20,7 +20,8 @@ export const BUSINESS_CONTACT = {
 } as const;
 
 export const HERO_MEDIA = {
-  video: '/media/landing/gemini_generated_video_32547dd8.mp4',
+  video: '/media/landing/hero-scroll.mp4',
+  videoFallback: '/media/landing/gemini_generated_video_32547dd8.mp4',
   videoAlt:
     'Mercedes-Benz Evolution Transfers vans cruising along the sunlit Cape Town coastline with Table Mountain and Lion’s Head in the background',
   image: '/media/landing/Mercedes%20Vans%20by%20the%20Sunlit%20Shore.png',

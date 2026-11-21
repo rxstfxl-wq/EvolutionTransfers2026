@@ -166,25 +166,21 @@ export function HomePage({ onNavigate }: HomePageProps) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [showShuttlePopup]);
 
-  // Hero video timestamp synced to scroll position and scroll speed
+  // Hero video timestamp synced to scroll position and scroll speed (desktop + mobile browsers)
   useEffect(() => {
     if (shouldReduceMotion) return;
     const video = heroVideoRef.current;
     if (!video) return;
 
     let rafId: number | null = null;
+    let isPrimed = false;
+    let isCleanedUp = false;
 
-    const tick = () => {
-      rafId = null;
-      const duration = video.duration;
-      if (!Number.isFinite(duration) || duration <= 0) return;
-
+    const getTargetState = (duration: number) => {
       const maxTime = Math.max(0, duration - 0.05);
       const progress = Math.max(0, Math.min(1, scrollYProgress.get()));
       const velocityPxPerSec = scrollVelocity.get();
       const speedNorm = Math.min(1, Math.abs(velocityPxPerSec) / 2400);
-
-      // Faster scroll accelerates scrub responsiveness and adds subtle directional momentum
       const velocityOffset = Math.max(
         -0.45,
         Math.min(0.45, (velocityPxPerSec / 2400) * 0.45)
@@ -193,15 +189,32 @@ export function HomePage({ onNavigate }: HomePageProps) {
         0,
         Math.min(maxTime, progress * maxTime + velocityOffset)
       );
+      return { maxTime, velocityPxPerSec, speedNorm, targetTime };
+    };
 
-      const lerpFactor = 0.1 + speedNorm * 0.28;
+    const tick = () => {
+      rafId = null;
+      if (isCleanedUp) return;
+      const duration = video.duration;
+      if (!Number.isFinite(duration) || duration <= 0 || video.readyState < 1) {
+        return;
+      }
+
+      const { velocityPxPerSec, speedNorm, targetTime } = getTargetState(duration);
+
+      // Faster scroll accelerates scrub responsiveness and adds directional momentum
+      const lerpFactor = 0.12 + speedNorm * 0.3;
       scrubbedTimeRef.current += (targetTime - scrubbedTimeRef.current) * lerpFactor;
 
       if (
         !video.seeking &&
         Math.abs(video.currentTime - scrubbedTimeRef.current) > 0.016
       ) {
-        video.currentTime = scrubbedTimeRef.current;
+        try {
+          video.currentTime = scrubbedTimeRef.current;
+        } catch {
+          // Ignore mobile seek errors prior to full buffer readyState
+        }
       }
 
       if (
@@ -213,36 +226,89 @@ export function HomePage({ onNavigate }: HomePageProps) {
     };
 
     const scheduleTick = () => {
-      if (rafId === null) {
+      if (!isCleanedUp && rafId === null) {
         rafId = window.requestAnimationFrame(tick);
       }
     };
 
-    const handleLoadedMetadata = () => {
+    const primeMobileDecoder = () => {
+      if (isPrimed || isCleanedUp) return;
+      video.muted = true;
+      const playPromise = video.play();
+      if (playPromise && typeof playPromise.then === 'function') {
+        playPromise
+          .then(() => {
+            isPrimed = true;
+            if (!isCleanedUp) {
+              video.pause();
+              scheduleTick();
+            }
+          })
+          .catch(() => {
+            // Mobile Low Power Mode blocks play() until first touch gesture
+          });
+      }
+    };
+
+    const syncInitialFrame = () => {
       video.pause();
       const duration = video.duration;
       if (Number.isFinite(duration) && duration > 0) {
+        const { maxTime } = getTargetState(duration);
         const initialProgress = Math.max(0, Math.min(1, scrollYProgress.get()));
         const initialTime = Math.max(
           0.02,
-          Math.min(Math.max(0, duration - 0.05), initialProgress * (duration - 0.05))
+          Math.min(maxTime, initialProgress * maxTime)
         );
         scrubbedTimeRef.current = initialTime;
-        video.currentTime = initialTime;
+        try {
+          video.currentTime = initialTime;
+        } catch {
+          // Safe guard for browsers buffering initial keyframes
+        }
       }
+      primeMobileDecoder();
       scheduleTick();
     };
 
-    video.addEventListener('loadedmetadata', handleLoadedMetadata);
-    if (video.readyState >= 1) {
-      handleLoadedMetadata();
+    const handleFirstTouch = () => {
+      primeMobileDecoder();
+      scheduleTick();
+    };
+
+    if (video.readyState === 0) {
+      video.load();
+    } else {
+      syncInitialFrame();
     }
+
+    video.addEventListener('loadedmetadata', syncInitialFrame);
+    video.addEventListener('loadeddata', syncInitialFrame);
+    video.addEventListener('canplay', scheduleTick);
+    video.addEventListener('seeked', scheduleTick);
+
+    window.addEventListener('touchstart', handleFirstTouch, {
+      once: true,
+      passive: true,
+    });
+    window.addEventListener('pointerdown', handleFirstTouch, {
+      once: true,
+      passive: true,
+    });
+    window.addEventListener('scroll', scheduleTick, { passive: true });
 
     const unsubscribeProgress = scrollYProgress.on('change', scheduleTick);
     const unsubscribeVelocity = scrollVelocity.on('change', scheduleTick);
 
     return () => {
-      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      isCleanedUp = true;
+      video.removeEventListener('loadedmetadata', syncInitialFrame);
+      video.removeEventListener('loadeddata', syncInitialFrame);
+      video.removeEventListener('canplay', scheduleTick);
+      video.removeEventListener('seeked', scheduleTick);
+      window.removeEventListener('touchstart', handleFirstTouch);
+      window.removeEventListener('pointerdown', handleFirstTouch);
+      window.removeEventListener('scroll', scheduleTick);
       unsubscribeProgress();
       unsubscribeVelocity();
       if (rafId !== null) {
@@ -366,22 +432,26 @@ export function HomePage({ onNavigate }: HomePageProps) {
         className="relative bg-[#090909] text-[#FAF9F6] overflow-hidden lg:min-h-[680px] flex flex-col lg:flex-row lg:items-center"
       >
         {/* Unified Responsive Scroll-Parallax & Scrubbed Video Frame */}
-        <div className="relative w-full h-64 sm:h-80 lg:h-full lg:absolute lg:inset-0 overflow-hidden">
+        <div className="relative w-full aspect-[16/10] sm:aspect-auto sm:h-80 lg:h-full lg:absolute lg:inset-0 overflow-hidden bg-[#090909]">
           <motion.video
             ref={heroVideoRef}
-            src={HERO_MEDIA.video}
             poster={HERO_MEDIA.image}
             muted
             playsInline
             preload="auto"
+            disablePictureInPicture
+            controls={false}
             aria-label={HERO_MEDIA.videoAlt}
             style={
               shouldReduceMotion
                 ? undefined
                 : { y: parallaxY, scale: parallaxScale }
             }
-            className="w-full h-full object-cover object-[38%_55%] lg:object-[70%_center] will-change-transform"
-          />
+            className="block w-full h-full object-cover object-center lg:object-[70%_center] will-change-transform"
+          >
+            <source src={HERO_MEDIA.video} type="video/mp4" />
+            <source src={HERO_MEDIA.videoFallback} type="video/mp4" />
+          </motion.video>
           <div
             aria-hidden="true"
             className="lg:hidden absolute inset-0 bg-gradient-to-t from-[#090909] via-[#090909]/20 to-transparent pointer-events-none"
