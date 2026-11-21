@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ArrowRight,
   CalendarCheck,
@@ -52,11 +52,17 @@ function renderReasonIcon(name: (typeof WHY_CHOOSE_ITEMS)[number]['iconName']) {
 
 export function HomePage({ onNavigate }: HomePageProps) {
   const shouldReduceMotion = useReducedMotion();
+  const bookingSectionRef = useRef<HTMLElement | null>(null);
+  const hasTriggeredDesktopPopupRef = useRef<boolean>(false);
+
   const [isMobileViewport, setIsMobileViewport] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
     return window.matchMedia('(max-width: 767px)').matches;
   });
-  const [showMobileShuttlePopup, setShowMobileShuttlePopup] = useState<boolean>(true);
+  const [showShuttlePopup, setShowShuttlePopup] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(max-width: 767px)').matches;
+  });
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -69,25 +75,55 @@ export function HomePage({ onNavigate }: HomePageProps) {
     return () => mediaQuery.removeEventListener('change', handleViewportChange);
   }, []);
 
+  // Mobile (<768px): auto-dismiss after 7 seconds
   useEffect(() => {
-    if (!isMobileViewport || !showMobileShuttlePopup) return;
+    if (!isMobileViewport || !showShuttlePopup) return;
 
     const dismissTimer = window.setTimeout(() => {
-      setShowMobileShuttlePopup(false);
+      setShowShuttlePopup(false);
     }, MOBILE_POPUP_DURATION_MS);
+
+    return () => window.clearTimeout(dismissTimer);
+  }, [isMobileViewport, showShuttlePopup]);
+
+  // Desktop & Tablet (>=768px): trigger pop-up when the user reaches #booking-shortcut
+  useEffect(() => {
+    if (isMobileViewport || hasTriggeredDesktopPopupRef.current) return;
+    const target = bookingSectionRef.current;
+    if (!target || typeof IntersectionObserver === 'undefined') return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry?.isIntersecting && !hasTriggeredDesktopPopupRef.current) {
+          hasTriggeredDesktopPopupRef.current = true;
+          setShowShuttlePopup(true);
+          observer.disconnect();
+        }
+      },
+      {
+        threshold: 0.4,
+        rootMargin: '0px 0px -15% 0px',
+      }
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [isMobileViewport]);
+
+  // Escape key dismissal across all viewports
+  useEffect(() => {
+    if (!showShuttlePopup) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setShowMobileShuttlePopup(false);
+        setShowShuttlePopup(false);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.clearTimeout(dismissTimer);
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isMobileViewport, showMobileShuttlePopup]);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showShuttlePopup]);
 
   const scrollToBookingShortcut = () => {
     const el = document.getElementById('booking-shortcut');
@@ -107,7 +143,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
   };
 
   const handleComplimentarySelect = (dest: string) => {
-    setShowMobileShuttlePopup(false);
+    setShowShuttlePopup(false);
     onNavigate('book', {
       pickupLocation: COMPLIMENTARY_SHUTTLE.pickupLocation,
       destination: dest,
@@ -117,20 +153,20 @@ export function HomePage({ onNavigate }: HomePageProps) {
 
   return (
     <div>
-      {/* MOBILE POP-UP: COMPLIMENTARY HOTEL SHUTTLE (7 SECONDS ON LANDING OPEN / REFRESH) */}
+      {/* POP-UP: COMPLIMENTARY HOTEL SHUTTLE (Mobile: 7s on open/refresh; Tablet & Desktop: on reaching #booking-shortcut) */}
       <AnimatePresence>
-        {isMobileViewport && showMobileShuttlePopup && (
+        {showShuttlePopup && (
           <motion.div
-            key="mobile-shuttle-popup"
+            key="shuttle-popup"
             role="dialog"
             aria-modal="true"
-            aria-labelledby="mobile-shuttle-popup-title"
+            aria-labelledby="shuttle-popup-title"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: shouldReduceMotion ? 0 : 0.28 }}
-            onClick={() => setShowMobileShuttlePopup(false)}
-            className="md:hidden fixed inset-0 z-50 bg-[#090909]/75 backdrop-blur-[2px] flex items-center justify-center p-4"
+            onClick={() => setShowShuttlePopup(false)}
+            className="fixed inset-0 z-50 bg-[#090909]/75 backdrop-blur-[2px] flex items-center justify-center p-4 sm:p-6"
           >
             <motion.div
               initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.97 }}
@@ -138,33 +174,33 @@ export function HomePage({ onNavigate }: HomePageProps) {
               exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.98 }}
               transition={{ duration: shouldReduceMotion ? 0 : 0.32, ease: [0.16, 1, 0.3, 1] }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-sm bg-[#090909] text-[#FAF9F6] border border-[#C6A66B]/60 p-5 shadow-2xl overflow-hidden"
+              className="relative w-full max-w-sm md:max-w-xl bg-[#090909] text-[#FAF9F6] border border-[#C6A66B]/60 p-5 md:p-8 shadow-2xl overflow-hidden"
             >
-              <div className="flex items-start justify-between gap-3">
-                <p className="text-[11px] font-semibold tracking-[0.18em] uppercase text-[#C6A66B] pt-1">
+              <div className="flex items-start justify-between gap-4">
+                <p className="text-[11px] md:text-xs font-semibold tracking-[0.18em] uppercase text-[#C6A66B] pt-1">
                   {COMPLIMENTARY_SHUTTLE.kicker}
                 </p>
                 <button
                   type="button"
-                  onClick={() => setShowMobileShuttlePopup(false)}
+                  onClick={() => setShowShuttlePopup(false)}
                   aria-label="Close complimentary shuttle notice"
-                  className="w-9 h-9 -mt-1 -mr-1 inline-flex items-center justify-center border border-[#C6A66B]/30 text-[#D8D0C2] hover:text-[#FAF9F6] hover:border-[#C6A66B] transition-colors cursor-pointer shrink-0"
+                  className="w-9 h-9 md:w-10 md:h-10 -mt-1 -mr-1 inline-flex items-center justify-center border border-[#C6A66B]/30 text-[#D8D0C2] hover:text-[#FAF9F6] hover:border-[#C6A66B] transition-colors cursor-pointer shrink-0"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
               <p
-                id="mobile-shuttle-popup-title"
-                className="mt-2 font-serif text-xl text-[#FAF9F6] leading-snug"
+                id="shuttle-popup-title"
+                className="mt-2 md:mt-3 font-serif text-xl md:text-3xl text-[#FAF9F6] leading-snug"
               >
                 {COMPLIMENTARY_SHUTTLE.title}
               </p>
-              <p className="mt-1.5 text-sm text-[#D8D0C2] leading-relaxed">
+              <p className="mt-1.5 md:mt-2 text-sm md:text-base text-[#D8D0C2] leading-relaxed">
                 {COMPLIMENTARY_SHUTTLE.routeSummary}
               </p>
 
-              <div className="mt-5 grid grid-cols-1 gap-2.5">
+              <div className="mt-5 md:mt-6 grid grid-cols-1 md:grid-cols-2 gap-2.5 md:gap-3">
                 {COMPLIMENTARY_SHUTTLE.destinations.map((dest) => (
                   <button
                     key={dest}
@@ -172,13 +208,15 @@ export function HomePage({ onNavigate }: HomePageProps) {
                     onClick={() => handleComplimentarySelect(dest)}
                     className="inline-flex items-center justify-between gap-2 px-4 py-3 bg-[#C6A66B] hover:bg-[#D4B77E] text-[#090909] text-xs font-semibold tracking-[0.12em] uppercase transition-colors cursor-pointer min-h-[44px]"
                   >
-                    <span>{dest}</span>
+                    <span>
+                      {dest === 'Canal Walk Shopping Centre' ? 'Canal Walk' : dest}
+                    </span>
                     <ArrowRight className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
                   </button>
                 ))}
               </div>
 
-              {!shouldReduceMotion && (
+              {isMobileViewport && !shouldReduceMotion && (
                 <motion.div
                   aria-hidden="true"
                   initial={{ scaleX: 1 }}
@@ -278,38 +316,12 @@ export function HomePage({ onNavigate }: HomePageProps) {
 
       {/* 2. BOOKING SHORTCUT */}
       <section
+        ref={bookingSectionRef}
         id="booking-shortcut"
         aria-label="Quick Transfer Booking Enquiry"
         className="bg-[#F4F0E8] py-10 sm:py-14 lg:py-20 border-b border-[#D8D0C2]"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5 sm:space-y-6">
-          <div className="hidden md:flex bg-[#090909] text-[#FAF9F6] border border-[#C6A66B]/40 p-4 sm:p-6 flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <div>
-              <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[#C6A66B]">
-                {COMPLIMENTARY_SHUTTLE.kicker}
-              </p>
-              <p className="mt-1 font-serif text-lg sm:text-2xl text-[#FAF9F6] leading-snug">
-                {COMPLIMENTARY_SHUTTLE.title} —{' '}
-                <span className="text-[#D8D0C2]">
-                  {COMPLIMENTARY_SHUTTLE.routeSummary}
-                </span>
-              </p>
-            </div>
-            <div className="grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-2.5 sm:gap-3 shrink-0">
-              {COMPLIMENTARY_SHUTTLE.destinations.map((dest) => (
-                <button
-                  key={dest}
-                  type="button"
-                  onClick={() => handleComplimentarySelect(dest)}
-                  className="inline-flex items-center justify-between sm:justify-center gap-2 px-4 py-2.5 bg-[#C6A66B] hover:bg-[#D4B77E] text-[#090909] text-xs font-semibold tracking-[0.12em] uppercase transition-colors cursor-pointer whitespace-nowrap min-h-[44px]"
-                >
-                  <span>{dest}</span>
-                  <ArrowRight className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-                </button>
-              ))}
-            </div>
-          </div>
-
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <BookingFormCard
             variant="shortcut"
             onOpenFullBooking={handleOpenFullBooking}
@@ -427,19 +439,19 @@ export function HomePage({ onNavigate }: HomePageProps) {
             {WHY_CHOOSE_ITEMS.map((item) => (
               <div
                 key={item.id}
-                className="py-5 sm:py-0 sm:pt-6 sm:border-t sm:border-[#C6A66B]/60 flex flex-row sm:flex-col items-start gap-4 sm:gap-0"
+                className="py-5 sm:py-0 sm:pt-6 sm:border-t sm:border-[#C6A66B]/60"
               >
-                <div className="w-10 h-10 bg-[#090909] flex items-center justify-center shrink-0 sm:mb-4">
-                  {renderReasonIcon(item.iconName)}
-                </div>
-                <div>
-                  <h3 className="font-serif text-xl font-medium text-[#090909]">
+                <div className="flex items-start gap-2.5">
+                  <div className="h-7 flex items-center justify-center shrink-0">
+                    {renderReasonIcon(item.iconName)}
+                  </div>
+                  <h3 className="font-serif text-xl leading-7 font-medium text-[#090909]">
                     {item.title}
                   </h3>
-                  <p className="mt-1.5 sm:mt-2 text-sm text-[#202020]/75 leading-relaxed">
-                    {item.description}
-                  </p>
                 </div>
+                <p className="mt-2 text-sm text-[#202020]/75 leading-relaxed">
+                  {item.description}
+                </p>
               </div>
             ))}
           </div>

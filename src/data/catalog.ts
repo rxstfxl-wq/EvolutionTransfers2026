@@ -92,9 +92,9 @@ export const SERVICES: ServiceItem[] = [
       'Tailored full-day and half-day private drives across the Cape Peninsula, Atlantic coastline, and Western Cape Winelands.',
     details:
       'Set your own pace with an experienced local driver who knows every scenic overlook, wine estate, and coastal pass.',
-    image: '/assets/aistudio/image_8706fe38.png',
+    image: '/media/explore/Camps%20Bay%20Coastal%20Panorama.png',
     imageAlt:
-      'Black Mercedes-Benz V-Class parked at a golden sunset viewpoint overlooking Table Mountain and Lion’s Head',
+      'Panoramic coastal view of Camps Bay beachfront and turquoise bay beneath the Twelve Apostles mountains along Cape Town’s tour route',
   },
 ];
 
@@ -155,9 +155,9 @@ export const DESTINATIONS: DestinationItem[] = [
       'Direct private drop-off at the Lower Cableway Station and Signal Hill viewpoints without parking delays.',
     editorialIntro:
       'Arrive effortlessly at Cape Town’s iconic flat-topped massif in time for crisp morning light or golden sunset views over the Atlantic.',
-    image: '/assets/aistudio/image_8706fe38.png',
+    image: '/media/explore/pexels-magda-ehlers-pexels-32555593.jpg',
     imageAlt:
-      'Mercedes-Benz V-Class at an elevated overlook facing Table Mountain and Lion’s Head at sunset',
+      'Iconic yellow Table Mountain photo frame overlooking Table Bay, Table Mountain, and Lion’s Head in Cape Town',
     featuredInCarousel: true,
   },
   {
@@ -185,9 +185,9 @@ export const DESTINATIONS: DestinationItem[] = [
       'Sheltered Atlantic coves with effortless chauffeur drop-off and scheduled evening collection.',
     editorialIntro:
       'Skip narrow coastal street parking with punctual private drop-off above Clifton’s granite boulders and sheltered turquoise bays.',
-    image: '/assets/aistudio/image_3720343c.png',
+    image: '/media/explore/pexels-stephanlouis-10010546.jpg',
     imageAlt:
-      'Atlantic Seaboard coastal road overlooking sunlit beaches and Table Mountain',
+      'White sandy bay and granite coastal boulders overlooking turquoise surf beneath Lion’s Head near Clifton Beaches, Cape Town',
     featuredInCarousel: true,
   },
   {
@@ -200,9 +200,9 @@ export const DESTINATIONS: DestinationItem[] = [
       'Complimentary pick-up & drop-off transfers from Lagoon Beach Hotel & Spa, plus direct private harbour rides.',
     editorialIntro:
       'Connect smoothly between Lagoon Beach Hotel & Spa and Cape Town’s historic working harbour—including complimentary guest pick-up and drop-off transfers.',
-    image: '/src/assets/images/va_waterfront_harbour_1795118508039.jpg',
+    image: '/media/explore/pexels-ccaupers-17391088.jpg',
     imageAlt:
-      'V&A Waterfront marina at twilight with yachts and Table Mountain glowing in the background',
+      'Sunlit Victoria Wharf facade and pedestrian bridge at the V&A Waterfront in Cape Town',
     featuredInCarousel: true,
   },
   {
@@ -215,9 +215,9 @@ export const DESTINATIONS: DestinationItem[] = [
       'Complimentary pick-up & drop-off transfers from Lagoon Beach Hotel & Spa directly to Century City’s flagship retail & dining precinct.',
     editorialIntro:
       'Enjoy complimentary hotel pick-up and drop-off transfers between Lagoon Beach Hotel & Spa and Canal Walk Shopping Centre for relaxed shopping, cinema, and dining.',
-    image: '/assets/aistudio/image_cc599052.png',
+    image: '/media/explore/pexels-clickshadow-31251547.jpg',
     imageAlt:
-      'Black Mercedes-Benz V-Class Evolution Transfers vehicle outside architectural entrance for Canal Walk Shopping Centre and hotel transfers',
+      'Sunlit vaulted glass ceiling and neoclassical interior arcade of Canal Walk Shopping Centre in Century City, Cape Town',
     featuredInCarousel: true,
   },
   {
@@ -230,9 +230,9 @@ export const DESTINATIONS: DestinationItem[] = [
       'Journey via Chapman’s Peak Drive and Boulders Beach to the dramatic cliffs of the Cape of Good Hope.',
     editorialIntro:
       'Experience one of the world’s great coastal drives in unhurried comfort, pausing for penguins at Boulders and windswept lighthouse views.',
-    image: '/src/assets/images/cape_point_peninsula_1795118508711.jpg',
+    image: '/media/explore/pexels-zhang-thomas-710712620-34168782.jpg',
     imageAlt:
-      'Cape Point lighthouse perched on dramatic ocean cliffs under warm golden sunlight',
+      'Dramatic stone cliffs and coastal footpath looking out over the ocean at Cape Point in Cape Town',
     featuredInCarousel: true,
   },
   {

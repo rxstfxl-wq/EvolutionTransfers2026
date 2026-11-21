@@ -131,26 +131,7 @@ export function ExploreHighlightsCarousel({
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between sm:justify-start gap-3 sm:gap-4 shrink-0">
-            <div className="flex items-center gap-2" aria-label="Carousel controls">
-              <button
-                type="button"
-                onClick={handlePrev}
-                aria-label="Previous destination highlights"
-                className="w-11 h-11 border border-[#C6A66B]/40 hover:border-[#C6A66B] hover:bg-[#C6A66B]/10 text-[#FAF9F6] flex items-center justify-center transition-colors cursor-pointer"
-              >
-                <ArrowLeft className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
-                onClick={handleNext}
-                aria-label="Next destination highlights"
-                className="w-11 h-11 border border-[#C6A66B]/40 hover:border-[#C6A66B] hover:bg-[#C6A66B]/10 text-[#FAF9F6] flex items-center justify-center transition-colors cursor-pointer"
-              >
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-
+          <div className="flex items-center justify-start shrink-0">
             <button
               type="button"
               onClick={onExplorePage}
@@ -161,36 +142,9 @@ export function ExploreHighlightsCarousel({
           </div>
         </div>
 
-        {/* Complimentary Hotel Shuttle Highlight */}
-        <div className="mt-6 sm:mt-8 bg-[#202020]/90 border border-[#C6A66B]/45 p-4 sm:p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-5">
-          <div>
-            <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[#C6A66B]">
-              {COMPLIMENTARY_SHUTTLE.kicker}
-            </p>
-            <p className="mt-1.5 font-serif text-lg sm:text-2xl text-[#FAF9F6] leading-snug">
-              {COMPLIMENTARY_SHUTTLE.title}:{' '}
-              <span className="text-[#C6A66B]">
-                {COMPLIMENTARY_SHUTTLE.routeSummary}
-              </span>
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-2.5 sm:gap-3 shrink-0">
-            {COMPLIMENTARY_SHUTTLE.destinations.map((dest) => (
-              <button
-                key={dest}
-                type="button"
-                onClick={() => onEnquireComplimentary(dest)}
-                className="inline-flex items-center justify-between sm:justify-center gap-2 px-4 py-2.5 border border-[#C6A66B]/60 hover:bg-[#C6A66B] text-[#FAF9F6] hover:text-[#090909] text-xs font-semibold tracking-[0.12em] uppercase transition-colors cursor-pointer whitespace-nowrap min-h-[44px]"
-              >
-                <span>{dest}</span>
-                <ArrowRight className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* Responsive Animated Sequential Carousel (Mobile: 1 card, Tablet: 2 cards, Desktop: 3 cards) */}
-        <div className="mt-6 sm:mt-8 overflow-hidden">
+        <div className="relative mt-8 sm:mt-10">
+          <div className="overflow-hidden">
           <motion.div
             className="flex will-change-transform"
             animate={{ x: `-${safePage * 100}%` }}
@@ -260,6 +214,24 @@ export function ExploreHighlightsCarousel({
               );
             })}
           </motion.div>
+          </div>
+
+          <button
+            type="button"
+            onClick={handlePrev}
+            aria-label="Previous destination highlights"
+            className="absolute left-2 sm:left-3 lg:-left-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-11 sm:h-11 bg-[#090909]/85 backdrop-blur-sm border border-[#C6A66B]/60 hover:border-[#C6A66B] hover:bg-[#C6A66B] text-[#FAF9F6] hover:text-[#090909] flex items-center justify-center shadow-lg transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6A66B]"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={handleNext}
+            aria-label="Next destination highlights"
+            className="absolute right-2 sm:right-3 lg:-right-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-11 sm:h-11 bg-[#090909]/85 backdrop-blur-sm border border-[#C6A66B]/60 hover:border-[#C6A66B] hover:bg-[#C6A66B] text-[#FAF9F6] hover:text-[#090909] flex items-center justify-center shadow-lg transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6A66B]"
+          >
+            <ArrowRight className="w-4 h-4" />
+          </button>
         </div>
 
         {/* Sequential Progress Indicator */}
@@ -287,6 +259,34 @@ export function ExploreHighlightsCarousel({
             {endIndex > startIndex + 1 ? `–${String(endIndex).padStart(2, '0')}` : ''} of{' '}
             {String(totalItems).padStart(2, '0')} Cape Town highlights
           </p>
+        </div>
+
+        {/* Complimentary Hotel Shuttle Highlight */}
+        <div className="mt-8 sm:mt-10 bg-[#202020]/90 border border-[#C6A66B]/45 p-4 sm:p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-5">
+          <div>
+            <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[#C6A66B]">
+              {COMPLIMENTARY_SHUTTLE.kicker}
+            </p>
+            <p className="mt-1.5 font-serif text-lg sm:text-2xl text-[#FAF9F6] leading-snug">
+              {COMPLIMENTARY_SHUTTLE.title}:{' '}
+              <span className="text-[#C6A66B]">
+                {COMPLIMENTARY_SHUTTLE.routeSummary}
+              </span>
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-2.5 sm:gap-3 shrink-0">
+            {COMPLIMENTARY_SHUTTLE.destinations.map((dest) => (
+              <button
+                key={dest}
+                type="button"
+                onClick={() => onEnquireComplimentary(dest)}
+                className="inline-flex items-center justify-between sm:justify-center gap-2 px-4 py-2.5 border border-[#C6A66B]/60 hover:bg-[#C6A66B] text-[#FAF9F6] hover:text-[#090909] text-xs font-semibold tracking-[0.12em] uppercase transition-colors cursor-pointer whitespace-nowrap min-h-[44px]"
+              >
+                <span>{dest}</span>
+                <ArrowRight className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </section>
