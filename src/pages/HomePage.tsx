@@ -319,7 +319,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
         ref={bookingSectionRef}
         id="booking-shortcut"
         aria-label="Quick Transfer Booking Enquiry"
-        className="bg-[#F4F0E8] py-10 sm:py-14 lg:py-20 border-b border-[#D8D0C2]"
+        className="bg-[#2C2A26] py-10 sm:py-14 lg:py-20 border-b border-[#D8D0C2]"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <BookingFormCard
@@ -461,7 +461,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
       {/* 6. FINAL CTA */}
       <section
         aria-labelledby="final-cta-heading"
-        className="bg-[#202020] text-[#FAF9F6] py-14 sm:py-20 lg:py-24 border-t border-[#C6A66B]/25"
+        className="bg-[#2C2A26] text-[#FAF9F6] py-14 sm:py-20 lg:py-24 border-t border-[#C6A66B]/25"
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-xs font-semibold tracking-[0.22em] uppercase text-[#C6A66B]">

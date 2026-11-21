@@ -12,11 +12,17 @@ export function BrandWordmark({
   if (variant === 'header') {
     return (
       <span
-        className={`inline-flex items-baseline gap-1.5 sm:gap-2 font-serif tracking-[0.09em] sm:tracking-[0.14em] text-[#C6A66B] uppercase whitespace-nowrap shrink-0 ${className}`}
+        className={`inline-flex flex-col items-center text-center select-none whitespace-nowrap shrink-0 ${className}`}
       >
-        <span className="text-[15px] sm:text-xl font-medium">Evolution</span>
-        <span className="text-[9.5px] sm:text-[0.68rem] tracking-[0.18em] sm:tracking-[0.26em] text-[#FAF9F6]/85 font-sans font-medium">
-          Transfers
+        <span className="font-serif text-[17px] sm:text-2xl font-normal tracking-[0.12em] text-[#C6A66B] leading-none uppercase">
+          Evolution
+        </span>
+        <span className="mt-1 sm:mt-1.5 flex items-center gap-2 w-full">
+          <span className="h-px flex-1 bg-[#C6A66B]/60" aria-hidden="true" />
+          <span className="font-sans text-[7.5px] sm:text-[9px] font-medium tracking-[0.28em] sm:tracking-[0.34em] text-[#FAF9F6] leading-none uppercase">
+            Transfers
+          </span>
+          <span className="h-px flex-1 bg-[#C6A66B]/60" aria-hidden="true" />
         </span>
       </span>
     );
@@ -24,15 +30,17 @@ export function BrandWordmark({
 
   return (
     <div className={`inline-flex flex-col items-center text-center select-none ${className}`}>
-      <span className="font-serif text-3xl sm:text-4xl font-normal tracking-[0.12em] text-[#C6A66B] leading-none uppercase">
-        Evolution
-      </span>
-      <div className="mt-2 flex items-center gap-3 w-full justify-center">
-        <span className="h-px w-8 bg-[#C6A66B]/60" aria-hidden="true" />
-        <span className="font-sans text-[11px] font-medium tracking-[0.38em] text-[#FAF9F6] uppercase">
-          Transfers
+      <div className="inline-flex flex-col items-center">
+        <span className="font-serif text-3xl sm:text-4xl font-normal tracking-[0.12em] text-[#C6A66B] leading-none uppercase">
+          Evolution
         </span>
-        <span className="h-px w-8 bg-[#C6A66B]/60" aria-hidden="true" />
+        <div className="mt-2 flex items-center gap-3 w-full">
+          <span className="h-px flex-1 bg-[#C6A66B]/60" aria-hidden="true" />
+          <span className="font-sans text-[11px] font-medium tracking-[0.38em] text-[#FAF9F6] leading-none uppercase">
+            Transfers
+          </span>
+          <span className="h-px flex-1 bg-[#C6A66B]/60" aria-hidden="true" />
+        </div>
       </div>
       {showTagline && (
         <span className="mt-2.5 font-serif italic text-sm tracking-wide text-[#D8D0C2]">

@@ -109,7 +109,7 @@ export function ExploreHighlightsCarousel({
       onMouseLeave={() => setIsPaused(false)}
       onFocusCapture={() => setIsPaused(true)}
       onBlurCapture={() => setIsPaused(false)}
-      className="bg-[#090909] text-[#FAF9F6] py-14 sm:py-18 lg:py-24"
+      className="bg-[#2C2A26] text-[#FAF9F6] py-14 sm:py-18 lg:py-24"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
@@ -180,7 +180,7 @@ export function ExploreHighlightsCarousel({
                           className="aspect-[4/3] w-full"
                           imgClassName="transition-transform duration-500 group-hover:scale-[1.03]"
                         />
-                        <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between">
+                        <div className="bg-[#2C2A26] p-5 sm:p-6 flex-1 flex flex-col justify-between">
                           <div>
                             <p className="text-xs text-[#C6A66B] tracking-[0.08em] tabular-nums">
                               <span className="font-semibold">{sequenceNumber}</span>{' '}

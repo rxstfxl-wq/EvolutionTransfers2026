@@ -267,8 +267,8 @@ export function BookingFormCard({
                 onClick={() => updateField('tripType', type)}
                 className={`px-4 py-2.5 sm:py-2 text-xs font-semibold tracking-[0.12em] uppercase transition-colors cursor-pointer whitespace-nowrap min-h-[40px] ${
                   active
-                    ? 'bg-[#090909] text-[#FAF9F6]'
-                    : 'text-[#202020]/75 hover:text-[#090909]'
+                    ? `${variant === 'shortcut' && type === 'one-way' ? 'bg-[#C6A66B]' : 'bg-[#090909]'} text-[#FAF9F6]`
+                    : `${variant === 'shortcut' && type === 'one-way' ? 'bg-[#C6A66B] ' : ''}text-[#202020]/75 hover:text-[#090909]`
                 }`}
               >
                 {type === 'one-way' ? 'One-Way' : 'Return'}
@@ -598,7 +598,9 @@ export function BookingFormCard({
             type="submit"
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 bg-[#C6A66B] hover:bg-[#D4B77E] text-[#090909] text-xs font-semibold tracking-[0.15em] uppercase transition-colors cursor-pointer whitespace-nowrap min-h-[48px] sm:min-h-[44px]"
           >
-            <span>Request My Transfer</span>
+            <span className={variant === 'shortcut' ? 'text-[#FFFFFF]' : undefined}>
+              Request My Transfer
+            </span>
             <ArrowRight className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>

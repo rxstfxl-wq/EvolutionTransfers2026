@@ -17,7 +17,7 @@ export function Footer({ onNavigate }: FooterProps) {
         <div className="grid grid-cols-2 lg:grid-cols-12 gap-x-6 gap-y-10 lg:gap-8">
           {/* Column 1: Brand Statement & Wordmark */}
           <div className="col-span-2 lg:col-span-4 flex flex-col items-start">
-            <BrandWordmark variant="stacked" showTagline={true} className="items-start text-left" />
+            <BrandWordmark variant="stacked" showTagline={true} />
             <p className="mt-5 text-sm text-[#D8D0C2]/80 leading-relaxed max-w-sm">
               Private Cape Town chauffeur transfers, airport arrivals, and bespoke
               Western Cape journeys crafted around punctuality, quiet luxury, and

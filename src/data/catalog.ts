@@ -56,9 +56,9 @@ export const SERVICES: ServiceItem[] = [
       'Seamless Cape Town International arrivals and departures with meet-and-greet assistance and punctual curbside collection.',
     details:
       'Flight-monitored pickups with luggage support and calm, direct passage from terminal to your hotel or private residence.',
-    image: '/assets/aistudio/image_3c538ba0.png',
+    image: '/media/Services/Mercedes%20Van%20and%20South%20African%20Flag-Tailed%20Plane.png',
     imageAlt:
-      'Uniformed chauffeur welcoming an arriving passenger with luggage beside a black Mercedes-Benz V-Class at the airport terminal',
+      'Black Mercedes-Benz Evolution Transfers van parked tarmac-side beside an aircraft bearing a South African flag tailfin at Cape Town International Airport',
   },
   {
     id: 'hotel-private',
@@ -68,9 +68,9 @@ export const SERVICES: ServiceItem[] = [
       'Discreet door-to-door chauffeur transport between Lagoon Beach Hotel & Spa, city hotels, private villas, and dining venues.',
     details:
       'Effortless point-to-point journeys tailored for solo travellers, couples, and families seeking quiet comfort across Cape Town.',
-    image: '/assets/aistudio/image_9eeeeb4c.png',
+    image: '/media/Services/Luxury%20Vans%20Along%20the%20Lagoon%20Beach.png',
     imageAlt:
-      'Chauffeur waiting with luggage outside a luxury stone-columned hotel entrance beside a black Mercedes-Benz V-Class',
+      'Black Mercedes-Benz Evolution Transfers vans parked at the entrance along Lagoon Beach in Cape Town',
   },
   {
     id: 'corporate-group',
