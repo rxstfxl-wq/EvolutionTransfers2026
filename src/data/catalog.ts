@@ -40,15 +40,15 @@ export const COMPLIMENTARY_SHUTTLE = {
 } as const;
 
 export const ABOUT_MEDIA = {
-  chauffeur: '/assets/aistudio/image_2623a8eb.png',
+  chauffeur: '/media/landing/Mercedes%20Vans%20by%20the%20Sunlit%20Shore.png',
   chauffeurAlt:
-    'Evolution Transfers chauffeur in black suit standing beside a Mercedes-Benz V-Class overlooking Cape Town and Table Mountain at sunset',
-  interior: '/src/assets/images/mercedes_vclass_interior_1795118508819.jpg',
+    'Three black Mercedes-Benz Evolution Transfers vans parked along the sunlit Cape Town shore with Table Mountain and Lion’s Head in the background',
+  interior: '/media/Services/Mercedes%20Van%20and%20South%20African%20Flag-Tailed%20Plane.png',
   interiorAlt:
-    'Luxury black leather captain seating inside the Mercedes-Benz V-Class executive cabin',
-  hotelArrival: '/assets/aistudio/image_cc599052.png',
+    'Black Mercedes-Benz Evolution Transfers van parked tarmac-side beside an aircraft bearing a South African flag tailfin at Cape Town International Airport',
+  hotelArrival: '/media/Services/Luxury%20Vans%20Along%20the%20Lagoon%20Beach.png',
   hotelArrivalAlt:
-    'Black Mercedes-Benz V-Class waiting outside a Cape Town hotel portico at twilight',
+    'Black Mercedes-Benz Evolution Transfers vans parked at the entrance along Lagoon Beach in Cape Town',
 };
 
 export const SERVICES: ServiceItem[] = [
@@ -249,9 +249,9 @@ export const DESTINATIONS: DestinationItem[] = [
       'Private chauffeur-driven tastings across historic oak-lined estates so every guest can relax.',
     editorialIntro:
       'Savour Stellenbosch’s renowned Cabernet estates, sculpture gardens, and Cape Dutch architecture with dedicated door-to-cellar transport.',
-    image: '/src/assets/images/winelands_stellenbosch_1795118508284.jpg',
+    image: '/media/explore/pexels-magda-ehlers-pexels-38339208.jpg',
     imageAlt:
-      'Sunlit Stellenbosch vineyard rows and historic Cape Dutch homestead framed by Western Cape mountains',
+      'Sunlit Stellenbosch vineyard valley and golden fields framed by rugged Cape Winelands mountains under a soft sky',
     featuredInCarousel: true,
   },
   {
@@ -264,9 +264,9 @@ export const DESTINATIONS: DestinationItem[] = [
       'South Africa’s culinary and Méthode Cap Classique valley, tailored to your estate reservations.',
     editorialIntro:
       'Spend the day moving calmly between mountain-ringed vineyards, tasting rooms, and celebrated valley kitchens on your own timetable.',
-    image: '/src/assets/images/winelands_stellenbosch_1795118508284.jpg',
+    image: '/media/explore/dezalb-south-africa-1544691.jpg',
     imageAlt:
-      'Golden hour vineyards and dramatic mountain backdrop in the Cape Winelands',
+      'Sunlit green hillside vineyards and rural estate buildings nestled beneath dramatic mountain peaks in the Franschhoek valley',
     featuredInCarousel: true,
   },
   {
@@ -279,9 +279,9 @@ export const DESTINATIONS: DestinationItem[] = [
       'Half-day private excursions to the Cape’s oldest wine-producing estates tucked behind Table Mountain.',
     editorialIntro:
       'Close to the city yet steeped in centuries of heritage, Constantia offers cool-climate Sauvignon Blanc tastings and shaded vineyard lunches.',
-    image: '/src/assets/images/winelands_stellenbosch_1795118508284.jpg',
+    image: '/media/explore/cocoparisienne-winery-241667.jpg',
     imageAlt:
-      'Tree-lined estate avenue and lush sunlit vineyards beneath mountain slopes',
+      'Historic white Cape Dutch gabled wine estate homestead framed by mature oak trees and emerald lawns in the Constantia Valley',
     featuredInCarousel: true,
   },
   {
@@ -294,9 +294,9 @@ export const DESTINATIONS: DestinationItem[] = [
       'Full-day or overnight private coastal transfers along Clarence Drive to Walker Bay’s cliff paths.',
     editorialIntro:
       'Follow the dramatic mountain-meets-ocean bends of Clarence Drive to Hermanus for seasonal whale watching and Hemel-en-Aarde estates.',
-    image: '/src/assets/images/hermanus_cliffs_coast_1795118509314.jpg',
+    image: '/media/explore/pexels-niklas-eichler-2137446-3770290.jpg',
     imageAlt:
-      'Hermanus coastal cliff path overlooking Walker Bay ocean waters at golden sunset',
+      'Historic Old Harbour stone slipway overlooking emerald Walker Bay ocean waters and coastal mountains in Hermanus',
     featuredInCarousel: true,
   },
 ];
