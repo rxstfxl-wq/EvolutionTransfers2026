@@ -84,9 +84,9 @@ export const SERVICES: ServiceItem[] = [
       'Executive roadshows, conference shuttles, and coordinated multi-passenger transfers in spacious Mercedes-Benz V-Class vehicles.',
     details:
       'Dedicated scheduling for diplomatic, corporate, and small-group itineraries requiring strict punctuality and privacy.',
-    image: '/assets/aistudio/image_2623a8eb.png',
+    image: '/media/Services/Luxury%20Briefcase%20by%20Executive%20Van.png',
     imageAlt:
-      'Executive chauffeur beside a black Mercedes-Benz V-Class overlooking Cape Town city bowl at golden hour',
+      'Executive leather briefcase placed beside an open black Mercedes-Benz V-Class door ready for corporate transfers',
   },
   {
     id: 'cape-town-tour',

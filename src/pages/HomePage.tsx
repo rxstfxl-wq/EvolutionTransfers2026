@@ -44,7 +44,7 @@ interface HomePageProps {
 const MOBILE_POPUP_DURATION_MS = 7000;
 
 function renderReasonIcon(name: (typeof WHY_CHOOSE_ITEMS)[number]['iconName']) {
-  const cls = 'w-5 h-5 text-[#C6A66B] stroke-[1.5]';
+  const cls = 'w-7 h-7 sm:w-8 sm:h-8 text-[#C6A66B] stroke-[1.4]';
   switch (name) {
     case 'chauffeur':
       return <UserCheck className={cls} aria-hidden="true" />;
@@ -615,45 +615,111 @@ export function HomePage({ onNavigate }: HomePageProps) {
       </section>
 
       {/* 5. WHY CHOOSE EVOLUTION */}
-      <section
-        aria-labelledby="why-evolution-heading"
-        className="bg-[#FAF9F6] text-[#090909] py-14 sm:py-20 lg:py-24 border-t border-[#D8D0C2]"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl">
-            <p className="text-xs font-semibold tracking-[0.2em] uppercase text-[#755A2B]">
-              The Evolution Standard
-            </p>
-            <h2
-              id="why-evolution-heading"
-              className="mt-2.5 sm:mt-3 font-serif text-3xl sm:text-4xl font-normal tracking-tight text-[#090909] text-balance"
-            >
-              Why Guests &amp; Concierges Choose Evolution Transfers
-            </h2>
-          </div>
+      {(() => {
+        const editorialOrder = [
+          'drivers',
+          'punctual',
+          'vehicles',
+          'direct',
+          'personalised',
+        ] as const;
+        const orderedReasons = [
+          ...editorialOrder
+            .map((id) => WHY_CHOOSE_ITEMS.find((item) => item.id === id))
+            .filter((item): item is (typeof WHY_CHOOSE_ITEMS)[number] => Boolean(item)),
+          ...WHY_CHOOSE_ITEMS.filter(
+            (item) => !editorialOrder.includes(item.id as (typeof editorialOrder)[number])
+          ),
+        ];
 
-          <div className="mt-8 sm:mt-12 divide-y divide-[#D8D0C2] sm:divide-y-0 sm:grid sm:grid-cols-2 lg:grid-cols-5 sm:gap-6">
-            {WHY_CHOOSE_ITEMS.map((item) => (
-              <div
-                key={item.id}
-                className="py-5 sm:py-0 sm:pt-6 sm:border-t sm:border-[#C6A66B]/60"
-              >
-                <div className="flex items-start gap-2.5">
-                  <div className="h-7 flex items-center justify-center shrink-0">
-                    {renderReasonIcon(item.iconName)}
-                  </div>
-                  <h3 className="font-serif text-xl leading-7 font-medium text-[#090909]">
-                    {item.title}
-                  </h3>
-                </div>
-                <p className="mt-2 text-sm text-[#202020]/75 leading-relaxed">
-                  {item.description}
+        return (
+          <section
+            aria-labelledby="why-evolution-heading"
+            className="relative overflow-hidden bg-[#FAF9F6] text-[#090909] pt-14 pb-24 sm:pt-20 sm:pb-28 lg:pt-24 lg:pb-32 border-t border-[#D8D0C2]"
+          >
+            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              {/* Centered Editorial Heading + Gold Divider Ornament */}
+              <div className="max-w-3xl mx-auto text-center">
+                <p className="text-xs font-semibold tracking-[0.2em] uppercase text-[#755A2B]">
+                  The Evolution Standard
                 </p>
+                <h2
+                  id="why-evolution-heading"
+                  className="mt-2.5 sm:mt-3 font-serif text-3xl sm:text-4xl font-normal tracking-tight text-[#090909] text-balance"
+                >
+                  Why Guests &amp; Concierges Choose Evolution Transfers
+                </h2>
+                <div
+                  aria-hidden="true"
+                  className="mt-5 sm:mt-6 flex items-center justify-center gap-4"
+                >
+                  <span className="h-px w-14 sm:w-20 bg-[#C6A66B]/60" />
+                  <CarFront className="w-5 h-5 text-[#C6A66B] stroke-[1.5] shrink-0" />
+                  <span className="h-px w-14 sm:w-20 bg-[#C6A66B]/60" />
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
+
+              {/* Mobile: 1-col stacked gold-outline cards | Tablet: 3+2 gold-outline grid | Desktop: 5 equal borderless cols with vertical gold dividers */}
+              <div className="mt-10 sm:mt-12 lg:mt-14 grid grid-cols-1 gap-4 sm:grid-cols-6 sm:gap-5 lg:grid-cols-5 lg:gap-8">
+                {orderedReasons.map((item, idx) => {
+                  const tabletPlacementClass =
+                    idx === 3
+                      ? 'sm:col-span-2 sm:col-start-2'
+                      : idx === 4
+                        ? 'sm:col-span-2 sm:col-start-4'
+                        : 'sm:col-span-2';
+
+                  return (
+                    <div
+                      key={item.id}
+                      className={`relative ${tabletPlacementClass} lg:col-span-1 lg:col-start-auto rounded-2xl border border-[#C6A66B]/55 bg-[#FAF9F6] p-6 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:py-2`}
+                    >
+                      {idx > 0 && (
+                        <span
+                          aria-hidden="true"
+                          className="hidden lg:block absolute -left-4 top-2 bottom-2 w-px bg-[#C6A66B]/45 pointer-events-none"
+                        />
+                      )}
+                      <div className="mb-3.5 sm:mb-4">
+                        {renderReasonIcon(item.iconName)}
+                      </div>
+                      <h3 className="font-serif text-xl leading-7 font-medium text-[#090909]">
+                        {item.title}
+                      </h3>
+                      <p className="mt-2.5 text-sm text-[#202020]/75 leading-relaxed">
+                        {item.description}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Soft Organic Bottom Transition */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none select-none absolute inset-x-0 bottom-0 h-16 sm:h-20 lg:h-24 overflow-hidden"
+            >
+              <svg
+                viewBox="0 0 1440 120"
+                preserveAspectRatio="none"
+                className="w-full h-full block"
+              >
+                <path
+                  d="M0,36 C280,96 560,104 880,58 C1130,22 1310,18 1440,38 L1440,120 L0,120 Z"
+                  fill="#F4F0E8"
+                  fillOpacity="0.72"
+                />
+                <path
+                  d="M0,74 C310,108 620,76 920,42 C1160,16 1320,28 1440,56 L1440,120 L0,120 Z"
+                  fill="#EFE8DA"
+                  fillOpacity="0.65"
+                />
+              </svg>
+            </div>
+          </section>
+        );
+      })()}
 
       {/* 6. FINAL CTA */}
       <section
