@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { EditorialImage } from '../components/EditorialImage';
 import {
@@ -21,22 +21,163 @@ interface ExplorePageProps {
 
 type CategoryFilter = 'All' | DestinationCategory;
 
+const EXPLORE_HEADER_VIDEO_DESKTOP = '/media/explore/EvoTransfers%20Explore%202026.mp4';
+const EXPLORE_HEADER_VIDEO_MOBILE = '/media/explore/explore-mobile.mp4';
+const EXPLORE_HEADER_VIDEO_POSTER = '/media/explore/explore-poster.jpg';
+
 export function ExplorePage({ onNavigate }: ExplorePageProps) {
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>('All');
+  const [isCompactViewport, setIsCompactViewport] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(max-width: 1023px)').matches;
+  });
+  const headerSectionRef = useRef<HTMLElement | null>(null);
   const headerVideoRef = useRef<HTMLVideoElement | null>(null);
+  const previousSrcRef = useRef<string | null>(null);
 
+  const videoSrc = isCompactViewport
+    ? EXPLORE_HEADER_VIDEO_MOBILE
+    : EXPLORE_HEADER_VIDEO_DESKTOP;
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mediaQuery = window.matchMedia('(max-width: 1023px)');
+    const handleViewportChange = (event: MediaQueryListEvent) => {
+      setIsCompactViewport(event.matches);
+    };
+    setIsCompactViewport(mediaQuery.matches);
+    mediaQuery.addEventListener('change', handleViewportChange);
+    return () => mediaQuery.removeEventListener('change', handleViewportChange);
+  }, []);
+
+  // Synchronously stamp HTML muted/playsinline attributes before Safari/Chrome evaluates autoplay
+  useLayoutEffect(() => {
+    const video = headerVideoRef.current;
+    if (!video) return;
+
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.loop = true;
+    video.autoplay = true;
+    video.setAttribute('muted', '');
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', '');
+    video.setAttribute('autoplay', '');
+    video.setAttribute('loop', '');
+  }, [videoSrc]);
+
+  // Mobile Chrome & iOS Safari autoplay enforcement, Low Power Mode gesture unlock, and lifecycle resume
   useEffect(() => {
     const video = headerVideoRef.current;
     if (!video) return;
-    video.muted = true;
-    video.defaultMuted = true;
-    const playPromise = video.play();
-    if (playPromise && typeof playPromise.catch === 'function') {
-      playPromise.catch(() => {
-        // Autoplay fallback handled silently by browser policy
-      });
+
+    let isCleanedUp = false;
+    let gestureListenersAttached = false;
+
+    const detachGestureListeners = () => {
+      if (!gestureListenersAttached) return;
+      gestureListenersAttached = false;
+      window.removeEventListener('touchstart', handleGestureUnlock);
+      window.removeEventListener('pointerdown', handleGestureUnlock);
+      window.removeEventListener('scroll', handleGestureUnlock);
+    };
+
+    const attemptPlay = () => {
+      if (isCleanedUp) return;
+      video.muted = true;
+      video.defaultMuted = true;
+      video.playsInline = true;
+      if (!video.paused && !video.ended) {
+        detachGestureListeners();
+        return;
+      }
+
+      const playPromise = video.play();
+      if (playPromise && typeof playPromise.then === 'function') {
+        playPromise
+          .then(() => {
+            if (!isCleanedUp) {
+              detachGestureListeners();
+            }
+          })
+          .catch(() => {
+            // Mobile Safari Low Power Mode or Chrome Data Saver defers autoplay until interaction
+          });
+      }
+    };
+
+    function handleGestureUnlock() {
+      attemptPlay();
     }
-  }, []);
+
+    const handleEnded = () => {
+      try {
+        video.currentTime = 0;
+      } catch {
+        // Ignore seek guard if buffer is resetting
+      }
+      attemptPlay();
+    };
+
+    const handleVisibilityOrPageShow = () => {
+      if (document.visibilityState === 'visible') {
+        attemptPlay();
+      }
+    };
+
+    if (previousSrcRef.current !== null && previousSrcRef.current !== videoSrc) {
+      video.load();
+    } else if (video.readyState === 0) {
+      video.load();
+    }
+    previousSrcRef.current = videoSrc;
+
+    attemptPlay();
+
+    video.addEventListener('loadedmetadata', attemptPlay);
+    video.addEventListener('loadeddata', attemptPlay);
+    video.addEventListener('canplay', attemptPlay);
+    video.addEventListener('canplaythrough', attemptPlay);
+    video.addEventListener('ended', handleEnded);
+    document.addEventListener('visibilitychange', handleVisibilityOrPageShow);
+    window.addEventListener('pageshow', handleVisibilityOrPageShow);
+    window.addEventListener('focus', attemptPlay);
+
+    gestureListenersAttached = true;
+    window.addEventListener('touchstart', handleGestureUnlock, { passive: true });
+    window.addEventListener('pointerdown', handleGestureUnlock, { passive: true });
+    window.addEventListener('scroll', handleGestureUnlock, { passive: true });
+
+    let intersectionObserver: IntersectionObserver | null = null;
+    if (headerSectionRef.current && typeof IntersectionObserver !== 'undefined') {
+      intersectionObserver = new IntersectionObserver(
+        (entries) => {
+          if (entries[0]?.isIntersecting) {
+            attemptPlay();
+          }
+        },
+        { threshold: 0.05 }
+      );
+      intersectionObserver.observe(headerSectionRef.current);
+    }
+
+    return () => {
+      isCleanedUp = true;
+      video.removeEventListener('loadedmetadata', attemptPlay);
+      video.removeEventListener('loadeddata', attemptPlay);
+      video.removeEventListener('canplay', attemptPlay);
+      video.removeEventListener('canplaythrough', attemptPlay);
+      video.removeEventListener('ended', handleEnded);
+      document.removeEventListener('visibilitychange', handleVisibilityOrPageShow);
+      window.removeEventListener('pageshow', handleVisibilityOrPageShow);
+      window.removeEventListener('focus', attemptPlay);
+      detachGestureListeners();
+      if (intersectionObserver) {
+        intersectionObserver.disconnect();
+      }
+    };
+  }, [videoSrc]);
 
   const categoriesToShow: DestinationCategory[] =
     selectedCategory === 'All' ? DESTINATION_CATEGORIES : [selectedCategory];
@@ -44,7 +185,10 @@ export function ExplorePage({ onNavigate }: ExplorePageProps) {
   return (
     <div className="bg-[#FAF9F6] text-[#090909]">
       {/* Editorial Header */}
-      <section className="relative overflow-hidden bg-[#090909] text-[#FAF9F6] py-12 sm:py-16 lg:py-24 border-b border-[#C6A66B]/20">
+      <section
+        ref={headerSectionRef}
+        className="relative overflow-hidden bg-[#090909] text-[#FAF9F6] py-12 sm:py-16 lg:py-24 border-b border-[#C6A66B]/20"
+      >
         {/* Masked Autoplay Looping Background Video */}
         <div
           aria-hidden="true"
@@ -52,7 +196,8 @@ export function ExplorePage({ onNavigate }: ExplorePageProps) {
         >
           <video
             ref={headerVideoRef}
-            src="/media/explore/EvoTransfers%20Explore%202026.mp4"
+            key={videoSrc}
+            poster={EXPLORE_HEADER_VIDEO_POSTER}
             autoPlay
             loop
             muted
@@ -60,8 +205,13 @@ export function ExplorePage({ onNavigate }: ExplorePageProps) {
             preload="auto"
             disablePictureInPicture
             controls={false}
-            className="w-full h-full object-cover object-center opacity-75 [mask-image:radial-gradient(ellipse_at_center,rgba(0,0,0,0.88)_15%,rgba(0,0,0,0.35)_100%)] sm:[mask-image:linear-gradient(to_left,rgba(0,0,0,1)_36%,rgba(0,0,0,0.45)_74%,rgba(0,0,0,0.18)_100%)]"
-          />
+            className="w-full h-full object-cover object-center opacity-75 [mask-image:radial-gradient(ellipse_at_center,rgba(0,0,0,0.88)_15%,rgba(0,0,0,0.35)_100%)] [-webkit-mask-image:radial-gradient(ellipse_at_center,rgba(0,0,0,0.88)_15%,rgba(0,0,0,0.35)_100%)] sm:[mask-image:linear-gradient(to_left,rgba(0,0,0,1)_36%,rgba(0,0,0,0.45)_74%,rgba(0,0,0,0.18)_100%)] sm:[-webkit-mask-image:linear-gradient(to_left,rgba(0,0,0,1)_36%,rgba(0,0,0,0.45)_74%,rgba(0,0,0,0.18)_100%)]"
+          >
+            <source src={videoSrc} type="video/mp4" />
+            {isCompactViewport && (
+              <source src={EXPLORE_HEADER_VIDEO_DESKTOP} type="video/mp4" />
+            )}
+          </video>
           <div className="absolute inset-0 bg-gradient-to-r from-[#090909]/92 via-[#090909]/68 to-[#090909]/25" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#090909]/90 via-[#090909]/20 to-[#090909]/45" />
         </div>
