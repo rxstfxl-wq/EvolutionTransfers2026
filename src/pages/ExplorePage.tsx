@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { EditorialImage } from '../components/EditorialImage';
 import {
@@ -23,6 +23,20 @@ type CategoryFilter = 'All' | DestinationCategory;
 
 export function ExplorePage({ onNavigate }: ExplorePageProps) {
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>('All');
+  const headerVideoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    const video = headerVideoRef.current;
+    if (!video) return;
+    video.muted = true;
+    video.defaultMuted = true;
+    const playPromise = video.play();
+    if (playPromise && typeof playPromise.catch === 'function') {
+      playPromise.catch(() => {
+        // Autoplay fallback handled silently by browser policy
+      });
+    }
+  }, []);
 
   const categoriesToShow: DestinationCategory[] =
     selectedCategory === 'All' ? DESTINATION_CATEGORIES : [selectedCategory];
@@ -30,8 +44,29 @@ export function ExplorePage({ onNavigate }: ExplorePageProps) {
   return (
     <div className="bg-[#FAF9F6] text-[#090909]">
       {/* Editorial Header */}
-      <section className="bg-[#090909] text-[#FAF9F6] py-12 sm:py-16 lg:py-24 border-b border-[#C6A66B]/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden bg-[#090909] text-[#FAF9F6] py-12 sm:py-16 lg:py-24 border-b border-[#C6A66B]/20">
+        {/* Masked Autoplay Looping Background Video */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 overflow-hidden pointer-events-none select-none"
+        >
+          <video
+            ref={headerVideoRef}
+            src="/media/explore/EvoTransfers%20Explore%202026.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            disablePictureInPicture
+            controls={false}
+            className="w-full h-full object-cover object-center opacity-75 [mask-image:radial-gradient(ellipse_at_center,rgba(0,0,0,0.88)_15%,rgba(0,0,0,0.35)_100%)] sm:[mask-image:linear-gradient(to_left,rgba(0,0,0,1)_36%,rgba(0,0,0,0.45)_74%,rgba(0,0,0,0.18)_100%)]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#090909]/92 via-[#090909]/68 to-[#090909]/25" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#090909]/90 via-[#090909]/20 to-[#090909]/45" />
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
             <p className="text-xs font-semibold tracking-[0.22em] uppercase text-[#C6A66B]">
               Destination Discovery
@@ -39,7 +74,7 @@ export function ExplorePage({ onNavigate }: ExplorePageProps) {
             <h1 className="mt-3 sm:mt-4 font-serif text-4xl sm:text-5xl lg:text-6xl font-normal tracking-tight text-[#FAF9F6] text-balance">
               Explore Cape Town &amp; The Western Cape
             </h1>
-            <p className="mt-4 sm:mt-5 text-sm sm:text-lg text-[#D8D0C2]/85 leading-relaxed">
+            <p className="mt-4 sm:mt-5 text-sm sm:text-lg text-[#D8D0C2]/90 leading-relaxed">
               Every landscape—from Table Mountain and Atlantic coves to historic
               Cape Winelands estates and Walker Bay cliffs—is accessible in complete
               private comfort with Evolution Transfers.
@@ -65,7 +100,7 @@ export function ExplorePage({ onNavigate }: ExplorePageProps) {
                     className={`px-4 py-2.5 text-xs font-semibold tracking-[0.12em] uppercase transition-colors cursor-pointer whitespace-nowrap shrink-0 min-h-[40px] ${
                       active
                         ? 'bg-[#C6A66B] text-[#090909]'
-                        : 'bg-[#202020] text-[#D8D0C2] hover:text-[#FAF9F6] border border-[#C6A66B]/20'
+                        : 'bg-[#090909]/80 backdrop-blur-sm text-[#D8D0C2] hover:text-[#FAF9F6] border border-[#C6A66B]/30'
                     }`}
                   >
                     {category === 'All' ? 'All Destinations' : category}
